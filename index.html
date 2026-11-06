@@ -165,43 +165,77 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--teal-bright);outlin
 #toast.on{opacity:1}
 @media (prefers-reduced-motion:reduce){#toast,.ico{transition:none}}
 
-/* 재고 화면 — 기존 재고알림 페이지 디자인 */
-#v-stock .in{padding-block:0 40px;gap:0}
-.stk-head{background:var(--head);color:#fff;border-radius:0 0 24px 24px;margin:0 -20px;padding:14px 20px 18px}
-.stk-head .top{display:flex;align-items:center;gap:10px}
-.stk-head .back{background:rgba(255,255,255,.12);border-color:transparent;color:#fff;min-height:38px;font-size:.82rem}
-.stk-head .ttl{flex:1;display:grid;line-height:1.25;padding-left:2px}
-.stk-head .ttl b{font-size:1.3rem;font-weight:800;letter-spacing:-.02em}
-.stk-head .ttl span{font-size:.86rem;opacity:.75}
-#stk-refresh{flex:none;width:44px;height:44px;border:0;border-radius:12px;background:rgba(255,255,255,.14);color:#fff;font-size:1.35rem;line-height:1;cursor:pointer}
-#stk-refresh:disabled{opacity:.5}
-.stk-tabs{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;margin-top:16px}
-.stk-tabs::-webkit-scrollbar{display:none}
-.stk-tab{flex:none;font:inherit;font-size:.9rem;font-weight:700;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.1);color:rgba(255,255,255,.88);border-radius:12px;padding:11px 16px;cursor:pointer;white-space:nowrap}
-.stk-tab.on{background:#faf8f3;border-color:#faf8f3;color:#22504a}
-.stk-tab .n{display:none}
-.stk-when{font-size:.84rem;color:var(--muted);padding:18px 0 10px;font-variant-numeric:tabular-nums}
-.stk-lab{font-size:.84rem;color:var(--muted);padding:0 0 10px}
-.stk-ok{background:var(--mint);color:#2f7a4e;border:1px solid #c9e2d2;border-radius:16px;padding:28px 16px;text-align:center;margin-top:6px}
-.stk-ok b{display:block;font-size:1.15rem;font-weight:800;margin-bottom:6px}
-.stk-ok span{font-size:.92rem;color:var(--sub)}
-.stk-err{background:var(--amber-tint);color:var(--amber);border-radius:14px;padding:14px 16px;font-size:.84rem;margin-top:6px}
-.stk-err a{color:inherit;font-weight:700}
-.stk-list{border:1px solid var(--hair);border-radius:18px;overflow:hidden;background:var(--panel)}
-.stk-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid var(--hair)}
-.stk-row:first-child{border-top:0}
-.stk-row .nm{font-size:1rem;font-weight:600;min-width:0;overflow-wrap:anywhere;line-height:1.3}
-.stk-row .sb{display:block;font-size:.8rem;font-weight:400;color:var(--muted);margin-top:4px}
-.stk-row .qty{font-size:.95rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-.stk-row .bd{font-size:.8rem;font-weight:700;border-radius:999px;padding:5px 13px;background:var(--mint);color:#2f7a4e;white-space:nowrap}
-.stk-row .bd.low{background:#f8dcd8;color:#b23a2e}
-.stk-row .bd.warning{background:var(--amber-tint);color:var(--amber)}
-.stk-row .bd.danger,.stk-row .bd.expired{background:#f8dcd8;color:#b23a2e}
-.stk-row .cat{font-size:.72rem;font-weight:600;color:var(--teal-bright);margin-left:6px}
-.stk-empty{padding:18px;text-align:center;color:var(--muted);font-size:.86rem}
-.stk-skel{height:58px;border-top:1px solid var(--hair);background:linear-gradient(90deg,transparent,var(--soft),transparent);background-size:200% 100%;animation:stkp 1.1s linear infinite}
+/* 재고 화면 — 원본 Index.html 스타일 그대로 */
+#v-stock{--s-bg:#F2EFE6;--s-ink:#16241F;--s-teal:#1F4F45;--s-brick:#B94F3D;--s-brick-soft:#F7E7E2;--s-sage:#3C8465;--s-sage-soft:#E4F1E9;--s-amber:#B8863B;--s-amber-soft:#F5ECDB;--s-line:#D9D3C3;--s-paper:#FBFAF6;--s-mute:#8B8778;
+  background:var(--s-bg);color:var(--s-ink);font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;-webkit-font-smoothing:antialiased;line-height:normal;letter-spacing:0;word-break:normal;min-height:100vh;margin-bottom:-40px;padding-bottom:48px}
+#v-stock .in{padding:0;max-width:none;gap:0;display:block}
+#v-stock .hero2{background:var(--s-teal);color:var(--s-paper);padding:calc(24px + env(safe-area-inset-top,0px)) 20px 18px;border-radius:0 0 28px 28px}
+#v-stock .hero-top{display:flex;justify-content:space-between;align-items:flex-start}
+#v-stock .clinic-name{font-size:18px;font-weight:700;letter-spacing:-0.01em}
+#v-stock .clinic-sub{font-size:12.5px;opacity:0.7;margin-top:3px}
+#v-stock .hbtns{display:flex;gap:6px}
+#v-stock .refresh-btn,#v-stock .home-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.28);color:var(--s-paper);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;font:inherit;min-height:0}
+#v-stock .refresh-btn:disabled{opacity:.5}
+#v-stock .s-tabs{display:flex;gap:5px;margin-top:18px}
+#v-stock .s-tab{flex:1;text-align:center;padding:9px 4px;border-radius:10px;font-size:11.8px;font-weight:600;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.75);cursor:pointer;border:1px solid rgba(255,255,255,0.16);white-space:nowrap;font-family:inherit}
+#v-stock .s-tab.active{background:var(--s-paper);color:var(--s-teal);border-color:var(--s-paper)}
+#v-stock .content{padding:20px 18px 0;max-width:520px;margin:0 auto}
+#v-stock .status-date{font-size:12.5px;color:var(--s-mute);margin-bottom:14px}
+#v-stock .section{margin-bottom:22px}
+#v-stock .section-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-left:2px}
+#v-stock .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+#v-stock .dot.growth{background:var(--s-brick)}
+#v-stock .dot.fluid{background:#3E6FA8}
+#v-stock .dot.vaccine{background:#3E8E5A}
+#v-stock .section-title{font-size:14.5px;font-weight:600}
+#v-stock .s-card{background:var(--s-paper);border:1px solid var(--s-line);border-radius:14px;overflow:hidden}
+#v-stock .s-item{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--s-line)}
+#v-stock .s-item:last-child{border-bottom:none}
+#v-stock .item-name{font-size:15px;font-weight:500}
+#v-stock .item-qty{font-size:13px;color:var(--s-brick);background:var(--s-brick-soft);padding:4px 10px;border-radius:20px;font-weight:600;white-space:nowrap}
+#v-stock .full-item{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--s-line);gap:10px}
+#v-stock .full-item:last-child{border-bottom:none}
+#v-stock .full-item-left{flex:1;min-width:0}
+#v-stock .full-item-name{font-size:14.5px;font-weight:500}
+#v-stock .full-item-expiry{font-size:11px;color:var(--s-mute);margin-top:2px}
+#v-stock .full-item-nums{font-size:12px;color:var(--s-mute);white-space:nowrap}
+#v-stock .badge{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap}
+#v-stock .badge.ok{background:var(--s-sage-soft);color:var(--s-sage)}
+#v-stock .badge.low{background:var(--s-brick-soft);color:var(--s-brick)}
+#v-stock .exp-item{padding:13px 16px;border-bottom:1px solid var(--s-line)}
+#v-stock .exp-item:last-child{border-bottom:none}
+#v-stock .exp-row{display:flex;justify-content:space-between;align-items:center}
+#v-stock .exp-name{font-size:14.5px;font-weight:500}
+#v-stock .exp-cat{font-size:11.5px;color:var(--s-mute);margin-top:2px}
+#v-stock .exp-badge{font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
+#v-stock .exp-badge.danger{background:var(--s-brick-soft);color:var(--s-brick)}
+#v-stock .exp-badge.warning{background:var(--s-amber-soft);color:var(--s-amber)}
+#v-stock .exp-badge.normal{background:#ECE8DC;color:var(--s-mute)}
+#v-stock .exp-date{font-size:11px;color:var(--s-mute);margin-top:4px}
+#v-stock .empty-state{background:var(--s-sage-soft);border:1px solid #CFE4D8;border-radius:14px;padding:26px 18px;text-align:center}
+#v-stock .empty-state .big{font-size:15px;font-weight:600;color:var(--s-sage);margin-bottom:4px}
+#v-stock .empty-state .small{font-size:13px;color:#4E6E5E}
+#v-stock .err-state{background:var(--s-amber-soft);border:1px solid #E6D6B0;border-radius:14px;padding:16px 18px;font-size:13px;color:var(--s-amber)}
+#v-stock .err-state a{color:inherit;font-weight:700}
+#v-stock .price-details{margin-top:16px;background:var(--s-paper);border:1px solid var(--s-line);border-radius:14px;overflow:hidden}
+#v-stock .price-summary{list-style:none;cursor:pointer;padding:14px 16px;font-size:14px;font-weight:700;color:var(--s-teal);display:flex;align-items:center;justify-content:space-between}
+#v-stock .price-summary::-webkit-details-marker{display:none}
+#v-stock .price-summary .chev{transition:transform 0.15s ease;font-size:12px;color:var(--s-mute)}
+#v-stock .price-details[open] .price-summary .chev{transform:rotate(180deg)}
+#v-stock .price-note-top{font-size:11px;color:var(--s-mute);padding:0 16px 10px;border-bottom:1px solid var(--s-line)}
+#v-stock .price-group-label{font-size:11.5px;font-weight:700;color:var(--s-mute);padding:10px 16px 4px;background:#F2EFE6}
+#v-stock .price-row{padding:11px 16px;border-bottom:1px solid var(--s-line);display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+#v-stock .price-row:last-child{border-bottom:none}
+#v-stock .price-left{flex:1;min-width:0}
+#v-stock .price-name{font-size:13.5px;font-weight:600}
+#v-stock .price-meta{font-size:11.5px;color:var(--s-mute);margin-top:2px}
+#v-stock .price-note{font-size:11px;color:var(--s-amber);margin-top:2px}
+#v-stock .price-amount{font-size:13px;font-weight:700;color:var(--s-teal);white-space:nowrap;text-align:right}
+#v-stock .price-amount .unit{display:block;font-size:10.5px;font-weight:500;color:var(--s-mute)}
+#v-stock .s-foot{max-width:520px;margin:30px auto 0;padding:0 18px;text-align:center}
+#v-stock .s-foot .updated{display:block;font-size:11.5px;color:var(--s-mute)}
+#v-stock .skel{height:52px;border-bottom:1px solid var(--s-line);background:linear-gradient(90deg,transparent,#ECE8DC,transparent);background-size:200% 100%;animation:stkp 1.1s linear infinite}
 @keyframes stkp{to{background-position:-200% 0}}
-#v-stock .foot{padding-top:22px}
 </style>
 
 <!-- 홈 -->
@@ -414,20 +448,25 @@ peak LH 9.95 (45분)
   </div>
 </div></div>
 
-<div id="v-stock" class="view dview" hidden><div class="in">
-  <div class="stk-head">
-    <div class="top"><button class="back">‹ 홈</button><div class="ttl"><b>키오름성장의원</b><span>약품 재고 알림</span></div><button id="stk-refresh" type="button" aria-label="새로고침">⟳</button></div>
-    <div class="stk-tabs" id="stk-tabs">
-      <button class="stk-tab on" data-tab="alert">부족 알림<span class="n"></span></button>
-      <button class="stk-tab" data-tab="growth">성장·비만<span class="n"></span></button>
-      <button class="stk-tab" data-tab="fluid">수액<span class="n"></span></button>
-      <button class="stk-tab" data-tab="vaccine">예방접종<span class="n"></span></button>
-      <button class="stk-tab" data-tab="expiry">유효기간<span class="n"></span></button>
+<div id="v-stock" class="view" hidden><div class="in">
+  <div class="hero2">
+    <div class="hero-top">
+      <div><div class="clinic-name">키오름성장의원</div><div class="clinic-sub">약품 재고 알림</div></div>
+      <div class="hbtns">
+        <button class="refresh-btn" id="stk-refresh" type="button" aria-label="새로고침"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.36M21 4v5h-5"/></svg></button>
+        <button class="home-btn back" type="button" aria-label="홈"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/></svg></button>
+      </div>
+    </div>
+    <div class="s-tabs" id="stk-tabs">
+      <div class="s-tab active" data-tab="alert">부족 알림</div>
+      <div class="s-tab" data-tab="growth">성장·비만</div>
+      <div class="s-tab" data-tab="fluid">수액</div>
+      <div class="s-tab" data-tab="vaccine">예방접종</div>
+      <div class="s-tab" data-tab="expiry">유효기간</div>
     </div>
   </div>
-  <div class="stk-when" id="stk-when">불러오는 중…</div>
-  <div id="stk-body"><div class="stk-list"><div class="stk-skel"></div><div class="stk-skel"></div><div class="stk-skel"></div></div></div>
-  <p class="foot">마지막 업데이트 <span id="stk-upd">—</span> · 시트 입력 후 반영까지 최대 5분</p>
+  <div class="content" id="stk-body"><div class="status-date" id="stk-when">불러오는 중…</div><div class="s-card"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div></div>
+  <div class="s-foot"><span class="updated" id="stk-upd"></span></div>
 </div></div>
 
 <div id="v-reagent" class="view dview" hidden><div class="in">
@@ -518,7 +557,7 @@ peak LH 9.95 (45분)
   var FALLBACK='https://script.google.com/macros/s/AKfycbyxTAX_H8IsSGC-R5i9TQka7LuPE4Du5_C6NgZqLBjIuMsAHEMtJJs15DNSBM2Po-Cj/exec';
   var WIN=90,WARN=30,DANGER=10,CKEY='kio_stock_v1';
   var root=document.getElementById('v-stock'); if(!root) return;
-  var body=document.getElementById('stk-body'),when=document.getElementById('stk-when'),rbtn=document.getElementById('stk-refresh'),tabs=document.getElementById('stk-tabs');
+  var body=document.getElementById('stk-body'),rbtn=document.getElementById('stk-refresh'),tabs=document.getElementById('stk-tabs');
   var data=null,tab='alert',loading=false;
 
   function parseCSV(t){var rows=[],row=[],f='',q=false;for(var i=0;i<t.length;i++){var c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}else{if(c==='"')q=true;else if(c===','){row.push(f);f=''}else if(c==='\n'){row.push(f);rows.push(row);row=[];f=''}else if(c!=='\r')f+=c}}if(f!==''||row.length){row.push(f);rows.push(row)}return rows}
@@ -528,46 +567,80 @@ peak LH 9.95 (45분)
   function dday(dt){var t=new Date();t.setHours(0,0,0,0);return Math.round((dt-t)/864e5)}
   function fmt(dt){return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0')}
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-  function stamp(ts){var d=new Date(ts);return (d.getMonth()+1)+'월 '+d.getDate()+'일 · '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
-  function setWhen(ts){when.textContent=stamp(ts)+' 기준';var u=document.getElementById('stk-upd');if(u)u.textContent=stamp(ts)}
+  function stamp(ts){var d=new Date(ts);return{date:(d.getMonth()+1)+'월 '+d.getDate()+'일',time:String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}}
+  var lastTs=0;
+  function setWhen(ts){lastTs=ts;var t=stamp(ts);var u=document.getElementById('stk-upd');if(u)u.textContent='마지막 업데이트 '+t.date+' '+t.time}
+  var PRICE_LIST={basic:[
+    {name:'제일하이비주',meta:'10ml/10A',price:16500,unit:1650,note:'마늘주사'},
+    {name:'리보비타주',meta:'1ml/50A',price:13000,unit:260},
+    {name:'제일하이비6주',meta:'1ml/50A',price:18000,unit:360},
+    {name:'제일하이비5주',meta:'500mg · 2ml/50A',price:40000,unit:800,note:'냉장'},
+    {name:'레드업주',meta:'5mg · 2ml/50A',price:38500,unit:770,note:'와인/핑크주사'},
+    {name:'라이넥주',meta:'2ml/50A',price:322000,unit:6440,note:'태반주사 · 일본 수입'},
+    {name:'네오미노화겐씨주',meta:'20ml/30A',price:118800,unit:3960,note:'감조주사'},
+    {name:'지타코주',meta:'3.5mg · 5ml/25A',price:25000,unit:1000,note:'은행엽엑스'},
+    {name:'큐펜주',meta:'100ml · 100ml/20백',price:62000,unit:3100,note:'아세트아미노펜'},
+    {name:'아모부로펜주',meta:'4ml · 4mL/10V',price:88000,unit:8800,note:'이부프로펜'},
+    {name:'지씨엔에이씨주',meta:'100mg · 3ml/10A',price:13200,unit:1320,note:'진해거담제'},
+    {name:'마시주사10%',meta:'5ml/25A',price:15000,unit:600,note:'마그네슘'},
+    {name:'메르스몬주',meta:'2ml/50A',price:420000,unit:8400,note:'갱년기장애/태반 · 일본 수입'},
+    {name:'대한뉴팜비타민씨주',meta:'10g · 20ml/10V',price:26000,unit:2600,note:'Vit.C · 냉장'},
+    {name:'디펩티벤주',meta:'50ml/10V',price:110000,unit:11000,note:'글루타민 · 25℃↓'},
+    {name:'리포토신주사',meta:'300mg · 12ml/10A',price:40000,unit:4000,note:'치옥트산'},
+    {name:'디톡시온주',meta:'600mg/10V',price:26000,unit:2600,note:'글루타치온 · 전 제약사 상시품절'},
+    {name:'아나칼주',meta:'20만IU/1ml/10A',price:30000,unit:3000,note:'비타민D · 25℃↓'},
+    {name:'중외엔에스주사액',meta:'110ml/50백',price:65000,unit:1300,note:'N/S 110ml · 공급불안정·상시품절'},
+    {name:'중외엔에스주(뉴플럭스)',meta:'200ml/10백',price:20000,unit:2000,note:'N/S 200ml · 공급불안정·상시품절'}
+  ],extra:[
+    {name:'대한뉴팜아르기닌프리믹스주',meta:'100ml/20백',price:240000,unit:12000,note:'아르기닌 · 비급여'},
+    {name:'멀티트레이스주',meta:'10ml/10V',price:45100,unit:4510,note:'미네랄주사 · 비급여'},
+    {name:'셀레뉴원주사',meta:'10ml/10V',price:54000,unit:5400,note:'25℃↓ · 부종완화주사 · 비급여'},
+    {name:'휴메딕스덱사메타손포스페이트이나트륨주',meta:'1ml/50A',price:11100,unit:222,note:'덱사 · 급여'},
+    {name:'이뮨알파원주',meta:'1.6mg/5V',price:75900,unit:15180,note:'싸이모신 · 냉장 · 비급여'},
+    {name:'제일팻리스주',meta:'1g · 5ml/25A',price:25000,unit:1000,note:'엘카르니틴 · 비급여 · 도매 판매 품목 아님(블루팜 주문)'}
+  ]};
+  function won(n){return n.toLocaleString('ko-KR')+'원'}
+  function priceRow(it){return'<div class="price-row"><div class="price-left"><div class="price-name">'+esc(it.name)+'</div><div class="price-meta">'+esc(it.meta)+'</div>'+(it.note?'<div class="price-note">'+esc(it.note)+'</div>':'')+'</div><div class="price-amount">'+won(it.price)+'<span class="unit">개당 '+won(it.unit)+'</span></div></div>'}
+  function priceTable(){return'<details class="price-details"><summary class="price-summary">발주 참고 가격표 <span class="chev">▾</span></summary><div class="price-note-top">제약사 사정으로 단가·공급 상황이 자주 바뀔 수 있어 참고용으로만 확인하세요.</div><div class="price-group-label">기본 주사제</div>'+PRICE_LIST.basic.map(priceRow).join('')+PRICE_LIST.extra.map(priceRow).join('')+'</details>'}
 
   function build(all){
-    var out={growth:all.growth,fluid:all.fluid,vaccine:all.vaccine,alert:[],expiry:[]};
+    var out={growth:all.growth,fluid:all.fluid,vaccine:all.vaccine,alert:{growth:[],fluid:[],vaccine:[]},expiry:[]};
     SRC.forEach(function(s){all[s.key].forEach(function(it){
-      if(it.status.indexOf('부족')>-1)out.alert.push({name:it.name,qty:it.qty,current:it.current,safety:it.safety,cat:s.label});
-      var dt=expDate(it.expiry);if(dt){var dd=dday(dt);if(dd<=WIN)out.expiry.push({name:it.name,cat:s.label,dday:dd,date:fmt(dt)})}
+      if(it.status.indexOf('부족')>-1)out.alert[s.key].push({name:it.name,qty:it.qty});
+      var dt=expDate(it.expiry);if(dt){var dd=dday(dt);if(dd<=WIN)out.expiry.push({name:it.name,cat:s.label,dday:dd,date:fmt(dt),level:dd<=DANGER?'danger':dd<=WARN?'warning':'normal'})}
     })});
     out.expiry.sort(function(a,b){return a.dday-b.dday});
     return out;
   }
+  function fullList(list){return'<div class="s-card">'+list.map(function(it){var low=it.status.indexOf('부족')>-1;return'<div class="full-item"><div class="full-item-left"><div class="full-item-name">'+esc(it.name)+'</div><div class="full-item-expiry">유효기한 '+(it.expiry?esc(it.expiry):'-')+'</div></div><span class="full-item-nums">'+it.current+'/'+it.safety+'</span><span class="badge '+(low?'low':'ok')+'">'+(low?'⚠부족':'정상')+'</span></div>'}).join('')+'</div>'}
   function render(){
     if(!data)return;
-    var v=build(data);
-    tabs.querySelectorAll('.stk-tab').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-tab')===tab)});
+    var v=build(data),t=stamp(lastTs||Date.now());
+    tabs.querySelectorAll('.s-tab').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-tab')===tab)});
     var h='';
     if(tab==='alert'){
-      if(!v.alert.length)h='<div class="stk-ok"><b>✅ 모든 품목 안전재고 이상</b><span>오늘은 추가 발주가 필요하지 않습니다.</span></div>';
-      else h='<div class="stk-lab">현재수량 / 안전재고</div><div class="stk-list">'+v.alert.map(function(it){return'<div class="stk-row"><span class="nm">'+esc(it.name)+'<span class="cat">'+esc(it.cat)+'</span><span class="sb">발주 필요 '+it.qty+'개</span></span><span class="qty">'+it.current+'/'+it.safety+'</span><span class="bd low">부족</span></div>'}).join('')+'</div>';
+      var tot=v.alert.growth.length+v.alert.fluid.length+v.alert.vaccine.length;
+      h='<div class="status-date">'+t.date+' · '+t.time+' 기준</div>';
+      if(!tot)h+='<div class="empty-state"><div class="big">✅ 모든 품목 안전재고 이상</div><div class="small">오늘은 추가 발주가 필요하지 않습니다.</div></div>';
+      else[['growth','성장·비만'],['fluid','수액'],['vaccine','예방접종']].forEach(function(c){var l=v.alert[c[0]];if(!l.length)return;h+='<div class="section"><div class="section-head"><span class="dot '+c[0]+'"></span><span class="section-title">'+c[1]+' 부족 품목</span></div><div class="s-card">'+l.map(function(it){return'<div class="s-item"><span class="item-name">'+esc(it.name)+'</span><span class="item-qty">발주 '+it.qty+'개</span></div>'}).join('')+'</div></div>'});
     }else if(tab==='expiry'){
-      if(!v.expiry.length)h='<div class="stk-ok"><b>✅ 90일 내 만료 품목 없음</b></div>';
-      else h='<div class="stk-lab">유효기한 임박 순</div><div class="stk-list">'+v.expiry.map(function(it){var cls=it.dday<0?'expired':it.dday<=DANGER?'danger':it.dday<=WARN?'warning':'';var lab=it.dday<0?'만료':it.dday===0?'D-day':'D-'+it.dday;return'<div class="stk-row"><span class="nm">'+esc(it.name)+'<span class="cat">'+esc(it.cat)+'</span><span class="sb">유효기한 '+it.date+'</span></span><span class="qty"></span><span class="bd '+cls+'">'+lab+'</span></div>'}).join('')+'</div>';
+      if(!v.expiry.length)h='<div class="status-date">90일 이내 만료 예정 품목</div><div class="empty-state"><div class="big">✅ 임박한 유효기간 없음</div><div class="small">90일 이내 만료 예정인 품목이 없습니다.</div></div>';
+      else h='<div class="status-date">90일 이내 만료 예정 · D-day 순</div><div class="s-card">'+v.expiry.map(function(it){var dt=it.dday<0?'만료됨':it.dday===0?'D-day':'D-'+it.dday;return'<div class="exp-item"><div class="exp-row"><div><div class="exp-name">'+esc(it.name)+'</div><div class="exp-cat">'+esc(it.cat)+'</div></div><span class="exp-badge '+it.level+'">'+dt+'</span></div><div class="exp-date">'+it.date+' 만료</div></div>'}).join('')+'</div>';
     }else{
-      var list=v[tab];
-      if(!list.length)h='<div class="stk-list"><div class="stk-empty">품목 없음</div></div>';
-      else h='<div class="stk-lab">현재수량 / 안전재고</div><div class="stk-list">'+list.map(function(it){var low=it.status.indexOf('부족')>-1;return'<div class="stk-row"><span class="nm">'+esc(it.name)+(it.expiry?'<span class="sb">유효기한 '+esc(it.expiry)+'</span>':'')+'</span><span class="qty">'+it.current+'/'+it.safety+'</span><span class="bd'+(low?' low':'')+'">'+(low?'부족':'정상')+'</span></div>'}).join('')+'</div>';
+      h='<div class="status-date">현재수량 / 안전재고</div>'+fullList(v[tab])+(tab==='fluid'?priceTable():'');
     }
     body.innerHTML=h;
   }
   function load(force){
     if(loading)return;loading=true;rbtn.disabled=true;
-    if(data&&force)when.textContent='새로 불러오는 중…';
+    
     Promise.all(SRC.map(function(s){return fetch(BASE+s.gid+(force?'&_='+Date.now():''),{cache:force?'reload':'default'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.text()}).then(toRows)}))
     .then(function(res){data={growth:res[0],fluid:res[1],vaccine:res[2]};var ts=Date.now();setWhen(ts);try{localStorage.setItem(CKEY,JSON.stringify({ts:ts,data:data}))}catch(e){}render()})
-    .catch(function(err){if(!data){body.innerHTML='<div class="stk-err">재고 데이터를 불러오지 못했습니다. 네트워크를 확인하거나 <a href="'+FALLBACK+'">기존 재고 페이지</a>를 여세요.</div>';when.textContent='불러오기 실패'}else{when.textContent+=' · 갱신 실패'}})
+    .catch(function(err){if(!data){body.innerHTML='<div class="err-state">재고 데이터를 불러오지 못했습니다. 네트워크를 확인하거나 <a href="'+FALLBACK+'">기존 재고 페이지</a>를 여세요.</div>'}else{var u=document.getElementById('stk-upd');if(u)u.textContent+=' · 갱신 실패'}})
     .then(function(){loading=false;rbtn.disabled=false});
   }
   try{var c=JSON.parse(localStorage.getItem(CKEY)||'null');if(c&&c.data){data=c.data;setWhen(c.ts);render()}}catch(e){}
-  tabs.addEventListener('click',function(e){var b=e.target.closest('.stk-tab');if(!b)return;tab=b.getAttribute('data-tab');render()});
+  tabs.addEventListener('click',function(e){var b=e.target.closest('.s-tab');if(!b)return;tab=b.getAttribute('data-tab');render()});
   rbtn.addEventListener('click',function(){load(true)});
   var seen=false;
   function onShow(){if(!root.hidden){load(seen);seen=true}}

@@ -165,33 +165,43 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--teal-bright);outlin
 #toast.on{opacity:1}
 @media (prefers-reduced-motion:reduce){#toast,.ico{transition:none}}
 
-/* 재고 화면 */
-.stk-tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+/* 재고 화면 — 기존 재고알림 페이지 디자인 */
+#v-stock .in{padding-block:0 40px;gap:0}
+.stk-head{background:var(--head);color:#fff;border-radius:0 0 24px 24px;margin:0 -20px;padding:14px 20px 18px}
+.stk-head .top{display:flex;align-items:center;gap:10px}
+.stk-head .back{background:rgba(255,255,255,.12);border-color:transparent;color:#fff;min-height:38px;font-size:.82rem}
+.stk-head .ttl{flex:1;display:grid;line-height:1.25;padding-left:2px}
+.stk-head .ttl b{font-size:1.3rem;font-weight:800;letter-spacing:-.02em}
+.stk-head .ttl span{font-size:.86rem;opacity:.75}
+#stk-refresh{flex:none;width:44px;height:44px;border:0;border-radius:12px;background:rgba(255,255,255,.14);color:#fff;font-size:1.35rem;line-height:1;cursor:pointer}
+#stk-refresh:disabled{opacity:.5}
+.stk-tabs{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;margin-top:16px}
 .stk-tabs::-webkit-scrollbar{display:none}
-.stk-tab{flex:none;font:inherit;font-size:.84rem;font-weight:600;border:1px solid var(--hair);background:var(--panel);color:var(--sub);border-radius:999px;padding:7px 14px;cursor:pointer}
-.stk-tab.on{background:var(--teal);border-color:var(--teal);color:var(--on-teal)}
-.stk-tab .n{font-size:.7rem;opacity:.75;margin-left:4px;font-variant-numeric:tabular-nums}
-.stk-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums}
-.stk-meta button{font:inherit;font-size:.76rem;font-weight:700;border:1px solid var(--hair);background:var(--panel);color:var(--teal);border-radius:999px;padding:4px 12px;cursor:pointer}
-.stk-meta button:disabled{opacity:.5}
-.stk-ok{background:var(--mint);color:var(--teal);border-radius:14px;padding:22px 16px;text-align:center}
-.stk-ok b{display:block;font-size:1rem}
-.stk-ok span{font-size:.84rem;opacity:.85}
-.stk-err{background:var(--amber-tint);color:var(--amber);border-radius:14px;padding:14px 16px;font-size:.84rem}
+.stk-tab{flex:none;font:inherit;font-size:.9rem;font-weight:700;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.1);color:rgba(255,255,255,.88);border-radius:12px;padding:11px 16px;cursor:pointer;white-space:nowrap}
+.stk-tab.on{background:#faf8f3;border-color:#faf8f3;color:#22504a}
+.stk-tab .n{display:none}
+.stk-when{font-size:.84rem;color:var(--muted);padding:18px 0 10px;font-variant-numeric:tabular-nums}
+.stk-lab{font-size:.84rem;color:var(--muted);padding:0 0 10px}
+.stk-ok{background:var(--mint);color:#2f7a4e;border:1px solid #c9e2d2;border-radius:16px;padding:28px 16px;text-align:center;margin-top:6px}
+.stk-ok b{display:block;font-size:1.15rem;font-weight:800;margin-bottom:6px}
+.stk-ok span{font-size:.92rem;color:var(--sub)}
+.stk-err{background:var(--amber-tint);color:var(--amber);border-radius:14px;padding:14px 16px;font-size:.84rem;margin-top:6px}
 .stk-err a{color:inherit;font-weight:700}
-.stk-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:11px 16px;border-top:1px solid var(--hair)}
-.stk-row .nm{font-size:.92rem;min-width:0;overflow-wrap:anywhere}
-.stk-row .sb{font-size:.72rem;color:var(--muted);display:block}
-.stk-row .qty{font-size:.9rem;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
-.stk-row .qty small{font-size:.72rem;color:var(--muted);font-weight:400}
-.stk-row.low .qty{color:#b23a2e;font-weight:700}
-.stk-row.danger .qty{color:#b23a2e;font-weight:700}
-.stk-row.warning .qty{color:var(--amber);font-weight:700}
-.stk-row.expired .qty{color:#b23a2e;font-weight:700}
-.stk-row .tag{font-size:.68rem;font-weight:700;border-radius:999px;padding:1px 8px;background:var(--mint);color:var(--teal);margin-left:6px;vertical-align:1px}
-.stk-empty{padding:16px;text-align:center;color:var(--muted);font-size:.84rem}
-.stk-skel{height:44px;border-top:1px solid var(--hair);background:linear-gradient(90deg,transparent,var(--soft),transparent);background-size:200% 100%;animation:stkp 1.1s linear infinite}
+.stk-list{border:1px solid var(--hair);border-radius:18px;overflow:hidden;background:var(--panel)}
+.stk-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid var(--hair)}
+.stk-row:first-child{border-top:0}
+.stk-row .nm{font-size:1rem;font-weight:600;min-width:0;overflow-wrap:anywhere;line-height:1.3}
+.stk-row .sb{display:block;font-size:.8rem;font-weight:400;color:var(--muted);margin-top:4px}
+.stk-row .qty{font-size:.95rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.stk-row .bd{font-size:.8rem;font-weight:700;border-radius:999px;padding:5px 13px;background:var(--mint);color:#2f7a4e;white-space:nowrap}
+.stk-row .bd.low{background:#f8dcd8;color:#b23a2e}
+.stk-row .bd.warning{background:var(--amber-tint);color:var(--amber)}
+.stk-row .bd.danger,.stk-row .bd.expired{background:#f8dcd8;color:#b23a2e}
+.stk-row .cat{font-size:.72rem;font-weight:600;color:var(--teal-bright);margin-left:6px}
+.stk-empty{padding:18px;text-align:center;color:var(--muted);font-size:.86rem}
+.stk-skel{height:58px;border-top:1px solid var(--hair);background:linear-gradient(90deg,transparent,var(--soft),transparent);background-size:200% 100%;animation:stkp 1.1s linear infinite}
 @keyframes stkp{to{background-position:-200% 0}}
+#v-stock .foot{padding-top:22px}
 </style>
 
 <!-- 홈 -->
@@ -405,17 +415,19 @@ peak LH 9.95 (45분)
 </div></div>
 
 <div id="v-stock" class="view dview" hidden><div class="in">
-  <div class="bar"><button class="back">‹ 홈</button><h2>재고관리</h2></div>
-  <div class="stk-meta"><span id="stk-when">불러오는 중…</span><button id="stk-refresh" type="button">↻ 새로고침</button></div>
-  <div class="stk-tabs" id="stk-tabs">
-    <button class="stk-tab on" data-tab="alert">부족 알림<span class="n"></span></button>
-    <button class="stk-tab" data-tab="growth">성장·비만<span class="n"></span></button>
-    <button class="stk-tab" data-tab="fluid">수액<span class="n"></span></button>
-    <button class="stk-tab" data-tab="vaccine">예방접종<span class="n"></span></button>
-    <button class="stk-tab" data-tab="expiry">유효기간<span class="n"></span></button>
+  <div class="stk-head">
+    <div class="top"><button class="back">‹ 홈</button><div class="ttl"><b>키오름성장의원</b><span>약품 재고 알림</span></div><button id="stk-refresh" type="button" aria-label="새로고침">⟳</button></div>
+    <div class="stk-tabs" id="stk-tabs">
+      <button class="stk-tab on" data-tab="alert">부족 알림<span class="n"></span></button>
+      <button class="stk-tab" data-tab="growth">성장·비만<span class="n"></span></button>
+      <button class="stk-tab" data-tab="fluid">수액<span class="n"></span></button>
+      <button class="stk-tab" data-tab="vaccine">예방접종<span class="n"></span></button>
+      <button class="stk-tab" data-tab="expiry">유효기간<span class="n"></span></button>
+    </div>
   </div>
-  <div id="stk-body"><div class="group"><div class="stk-skel"></div><div class="stk-skel"></div><div class="stk-skel"></div></div></div>
-  <p class="foot">구글 시트 게시본에서 직접 읽어옴 · 시트 입력 후 반영까지 최대 5분</p>
+  <div class="stk-when" id="stk-when">불러오는 중…</div>
+  <div id="stk-body"><div class="stk-list"><div class="stk-skel"></div><div class="stk-skel"></div><div class="stk-skel"></div></div></div>
+  <p class="foot">마지막 업데이트 <span id="stk-upd">—</span> · 시트 입력 후 반영까지 최대 5분</p>
 </div></div>
 
 <div id="v-reagent" class="view dview" hidden><div class="in">
@@ -516,12 +528,13 @@ peak LH 9.95 (45분)
   function dday(dt){var t=new Date();t.setHours(0,0,0,0);return Math.round((dt-t)/864e5)}
   function fmt(dt){return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0')}
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-  function ago(ts){var m=Math.round((Date.now()-ts)/6e4);if(m<1)return'방금';if(m<60)return m+'분 전';var d=new Date(ts);return (d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+  function stamp(ts){var d=new Date(ts);return (d.getMonth()+1)+'월 '+d.getDate()+'일 · '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+  function setWhen(ts){when.textContent=stamp(ts)+' 기준';var u=document.getElementById('stk-upd');if(u)u.textContent=stamp(ts)}
 
   function build(all){
     var out={growth:all.growth,fluid:all.fluid,vaccine:all.vaccine,alert:[],expiry:[]};
     SRC.forEach(function(s){all[s.key].forEach(function(it){
-      if(it.status.indexOf('부족')>-1)out.alert.push({name:it.name,qty:it.qty,current:it.current,cat:s.label});
+      if(it.status.indexOf('부족')>-1)out.alert.push({name:it.name,qty:it.qty,current:it.current,safety:it.safety,cat:s.label});
       var dt=expDate(it.expiry);if(dt){var dd=dday(dt);if(dd<=WIN)out.expiry.push({name:it.name,cat:s.label,dday:dd,date:fmt(dt)})}
     })});
     out.expiry.sort(function(a,b){return a.dday-b.dday});
@@ -530,18 +543,18 @@ peak LH 9.95 (45분)
   function render(){
     if(!data)return;
     var v=build(data);
-    tabs.querySelectorAll('.stk-tab').forEach(function(b){var k=b.getAttribute('data-tab');b.classList.toggle('on',k===tab);b.querySelector('.n').textContent=(k==='alert'||k==='expiry')?(v[k].length?v[k].length:''):v[k].length});
+    tabs.querySelectorAll('.stk-tab').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-tab')===tab)});
     var h='';
     if(tab==='alert'){
       if(!v.alert.length)h='<div class="stk-ok"><b>✅ 모든 품목 안전재고 이상</b><span>오늘은 추가 발주가 필요하지 않습니다.</span></div>';
-      else h='<div class="group">'+v.alert.map(function(it){return'<div class="stk-row low"><span class="nm">'+esc(it.name)+'<span class="tag">'+esc(it.cat)+'</span><span class="sb">현재 '+it.current+'개</span></span><span class="qty">발주 '+it.qty+'<small>개</small></span></div>'}).join('')+'</div>';
+      else h='<div class="stk-lab">현재수량 / 안전재고</div><div class="stk-list">'+v.alert.map(function(it){return'<div class="stk-row"><span class="nm">'+esc(it.name)+'<span class="cat">'+esc(it.cat)+'</span><span class="sb">발주 필요 '+it.qty+'개</span></span><span class="qty">'+it.current+'/'+it.safety+'</span><span class="bd low">부족</span></div>'}).join('')+'</div>';
     }else if(tab==='expiry'){
       if(!v.expiry.length)h='<div class="stk-ok"><b>✅ 90일 내 만료 품목 없음</b></div>';
-      else h='<div class="group">'+v.expiry.map(function(it){var cls=it.dday<0?'expired':it.dday<=DANGER?'danger':it.dday<=WARN?'warning':'';var lab=it.dday<0?'만료 D+'+(-it.dday):'D-'+it.dday;return'<div class="stk-row '+cls+'"><span class="nm">'+esc(it.name)+'<span class="tag">'+esc(it.cat)+'</span><span class="sb">'+it.date+'</span></span><span class="qty">'+lab+'</span></div>'}).join('')+'</div>';
+      else h='<div class="stk-lab">유효기한 임박 순</div><div class="stk-list">'+v.expiry.map(function(it){var cls=it.dday<0?'expired':it.dday<=DANGER?'danger':it.dday<=WARN?'warning':'';var lab=it.dday<0?'만료':it.dday===0?'D-day':'D-'+it.dday;return'<div class="stk-row"><span class="nm">'+esc(it.name)+'<span class="cat">'+esc(it.cat)+'</span><span class="sb">유효기한 '+it.date+'</span></span><span class="qty"></span><span class="bd '+cls+'">'+lab+'</span></div>'}).join('')+'</div>';
     }else{
       var list=v[tab];
-      if(!list.length)h='<div class="group"><div class="stk-empty">품목 없음</div></div>';
-      else h='<div class="group">'+list.map(function(it){var low=it.status.indexOf('부족')>-1;return'<div class="stk-row'+(low?' low':'')+'"><span class="nm">'+esc(it.name)+(low?'<span class="tag" style="background:#f6ddd9;color:#b23a2e">부족</span>':'')+(it.expiry?'<span class="sb">유효 '+esc(it.expiry)+'</span>':'')+'</span><span class="qty">'+it.current+'<small> / 안전 '+it.safety+'</small></span></div>'}).join('')+'</div>';
+      if(!list.length)h='<div class="stk-list"><div class="stk-empty">품목 없음</div></div>';
+      else h='<div class="stk-lab">현재수량 / 안전재고</div><div class="stk-list">'+list.map(function(it){var low=it.status.indexOf('부족')>-1;return'<div class="stk-row"><span class="nm">'+esc(it.name)+(it.expiry?'<span class="sb">유효기한 '+esc(it.expiry)+'</span>':'')+'</span><span class="qty">'+it.current+'/'+it.safety+'</span><span class="bd'+(low?' low':'')+'">'+(low?'부족':'정상')+'</span></div>'}).join('')+'</div>';
     }
     body.innerHTML=h;
   }
@@ -549,11 +562,11 @@ peak LH 9.95 (45분)
     if(loading)return;loading=true;rbtn.disabled=true;
     if(data&&force)when.textContent='새로 불러오는 중…';
     Promise.all(SRC.map(function(s){return fetch(BASE+s.gid+(force?'&_='+Date.now():''),{cache:force?'reload':'default'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.text()}).then(toRows)}))
-    .then(function(res){data={growth:res[0],fluid:res[1],vaccine:res[2]};var ts=Date.now();when.textContent=ago(ts)+' 기준';try{localStorage.setItem(CKEY,JSON.stringify({ts:ts,data:data}))}catch(e){}render()})
+    .then(function(res){data={growth:res[0],fluid:res[1],vaccine:res[2]};var ts=Date.now();setWhen(ts);try{localStorage.setItem(CKEY,JSON.stringify({ts:ts,data:data}))}catch(e){}render()})
     .catch(function(err){if(!data){body.innerHTML='<div class="stk-err">재고 데이터를 불러오지 못했습니다. 네트워크를 확인하거나 <a href="'+FALLBACK+'">기존 재고 페이지</a>를 여세요.</div>';when.textContent='불러오기 실패'}else{when.textContent+=' · 갱신 실패'}})
     .then(function(){loading=false;rbtn.disabled=false});
   }
-  try{var c=JSON.parse(localStorage.getItem(CKEY)||'null');if(c&&c.data){data=c.data;when.textContent=ago(c.ts)+' 기준';render()}}catch(e){}
+  try{var c=JSON.parse(localStorage.getItem(CKEY)||'null');if(c&&c.data){data=c.data;setWhen(c.ts);render()}}catch(e){}
   tabs.addEventListener('click',function(e){var b=e.target.closest('.stk-tab');if(!b)return;tab=b.getAttribute('data-tab');render()});
   rbtn.addEventListener('click',function(){load(true)});
   var seen=false;

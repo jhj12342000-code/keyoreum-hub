@@ -15,7 +15,8 @@ const EV=[
   {date:'2027-01-15', label:'1/15',   card:'메디컬코리아 2027 사전등록',  stage:null, title:'메디컬코리아 2027 사전등록 확인', sub:'보건산업진흥원 공고 확인 → 일반 참관 사전등록 (3월 코엑스, 휴진일에 방문)'}
 ];
 // 매달 10일 '현황판 지난달 숫자 반영'은 자동으로 붙음(다음 2회). 날짜는 'YYYY-MM-DD'.
-function monthly(){var t=new Date(),o=[];for(var i=0;i<3&&o.length<2;i++){var d=new Date(t.getFullYear(),t.getMonth()+i,10);if(d<new Date(t.toDateString()))continue;var pm=((d.getMonth()+11)%12)+1;o.push({date:d,label:(d.getMonth()+1)+'/10',card:'현황판 '+pm+'월 숫자 반영',stage:null,title:'경영 현황판 '+pm+'월 숫자 반영',sub:'매출·처방 캡처, 투약 환자 수, 월별 초진 수'})}return o}
+var BOARD_DONE='2026-10'; // 현황판에 반영이 끝난 마지막 달 — board.html 갱신할 때 같이 올림
+function monthly(){var t=new Date(),o=[];for(var i=0;i<4&&o.length<2;i++){var d=new Date(t.getFullYear(),t.getMonth()+i,10);if(d<new Date(t.toDateString()))continue;var pv=new Date(d.getFullYear(),d.getMonth()-1,1);if(pv.getFullYear()+'-'+String(pv.getMonth()+1).padStart(2,'0')<=BOARD_DONE)continue;var pm=((d.getMonth()+11)%12)+1;o.push({date:d,label:(d.getMonth()+1)+'/10',card:'현황판 '+pm+'월 숫자 반영',stage:null,title:'경영 현황판 '+pm+'월 숫자 반영',sub:'매출·처방 캡처, 투약 환자 수, 월별 초진 수'})}return o}
 EV.forEach(function(e){if(typeof e.date==='string'){var p=e.date.split('-');e.date=new Date(+p[0],+p[1]-1,+p[2])}});
 var ALL=EV.concat(monthly()).sort(function(a,b){return a.date-b.date});
 // ===== 갱신 끝 =====
@@ -181,85 +182,85 @@ html.no-vt .view{animation:kv-view .25s cubic-bezier(.32,.72,0,1)}
 @media (prefers-reduced-motion:reduce){html.no-vt .view{animation:none}}
 
 
-.app,.back,.next,.copy,button.item,a.item,.hero .nextbar,:is(#v-stock,#v-reagent) .s-tab,:is(#v-stock,#v-reagent) .refresh-btn,#v-reagent .grp>summary{transition:transform .14s cubic-bezier(.32,.72,0,1);-webkit-tap-highlight-color:transparent}
+.app,.back,.next,.copy,button.item,a.item,.hero .nextbar,:is(#v-stock,#v-reagent,#v-money) .s-tab,:is(#v-stock,#v-reagent,#v-money) .refresh-btn,#v-reagent .grp>summary{transition:transform .14s cubic-bezier(.32,.72,0,1);-webkit-tap-highlight-color:transparent}
 .app:active{transform:scale(.93)}
-.back:active,.next:active,.copy:active,:is(#v-stock,#v-reagent) .s-tab:active,:is(#v-stock,#v-reagent) .refresh-btn:active{transform:scale(.95)}
+.back:active,.next:active,.copy:active,:is(#v-stock,#v-reagent,#v-money) .s-tab:active,:is(#v-stock,#v-reagent,#v-money) .refresh-btn:active{transform:scale(.95)}
 button.item:active,a.item:active,#v-reagent .grp>summary:active{transform:scale(.98)}
 @media (prefers-reduced-motion:reduce){.app:active,.back:active,.next:active,.copy:active,button.item:active,a.item:active{transform:none}}
 /* 재고 화면 — 원본 Index.html 스타일 그대로 */
-:is(#v-stock,#v-reagent){--s-bg:#F2EFE6;--s-ink:#16241F;--s-teal:#1F4F45;--s-brick:#B94F3D;--s-brick-soft:#F7E7E2;--s-sage:#3C8465;--s-sage-soft:#E4F1E9;--s-amber:#B8863B;--s-amber-soft:#F5ECDB;--s-line:#D9D3C3;--s-paper:#FBFAF6;--s-mute:#8B8778;
+:is(#v-stock,#v-reagent,#v-money){--s-bg:#F2EFE6;--s-ink:#16241F;--s-teal:#1F4F45;--s-brick:#B94F3D;--s-brick-soft:#F7E7E2;--s-sage:#3C8465;--s-sage-soft:#E4F1E9;--s-amber:#B8863B;--s-amber-soft:#F5ECDB;--s-line:#D9D3C3;--s-paper:#FBFAF6;--s-mute:#8B8778;
   background:var(--s-bg);color:var(--s-ink);font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;-webkit-font-smoothing:antialiased;line-height:normal;letter-spacing:0;word-break:normal;min-height:100vh;margin-bottom:-40px;padding-bottom:48px;display:block}
-:is(#v-stock,#v-reagent) .in{padding:0;max-width:none;width:100%;margin:0;gap:0;display:block}
-:is(#v-stock,#v-reagent) .hero2{background:var(--s-teal);color:var(--s-paper);padding:calc(16px + env(safe-area-inset-top,0px)) 20px 18px;border-radius:0 0 28px 28px}
-:is(#v-stock,#v-reagent) .hero-top{display:flex;justify-content:space-between;align-items:flex-start}
-:is(#v-stock,#v-reagent) .clinic-name{font-size:18px;font-weight:700;letter-spacing:-0.01em}
-:is(#v-stock,#v-reagent) .clinic-sub{font-size:12.5px;opacity:0.7;margin-top:3px}
-:is(#v-stock,#v-reagent) .hero-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-:is(#v-stock,#v-reagent) .hubpill{min-height:40px;font-size:.88rem;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);border-radius:999px;padding:0 14px 0 10px}
-:is(#v-stock,#v-reagent) .hubpill:active{background:rgba(255,255,255,.25)}
-:is(#v-stock,#v-reagent) .refresh-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.28);color:var(--s-paper);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;font:inherit;min-height:0}
-:is(#v-stock,#v-reagent) .refresh-btn:disabled{opacity:.5}
-:is(#v-stock,#v-reagent) .s-tabs{display:flex;gap:5px;margin-top:18px}
-:is(#v-stock,#v-reagent) .s-tab{flex:1;text-align:center;padding:9px 4px;border-radius:10px;font-size:11.8px;font-weight:600;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.75);cursor:pointer;border:1px solid rgba(255,255,255,0.16);white-space:nowrap;font-family:inherit}
-:is(#v-stock,#v-reagent) .s-tab.active{background:var(--s-paper);color:var(--s-teal);border-color:var(--s-paper)}
-:is(#v-stock,#v-reagent) .content{padding:20px 18px 0;max-width:520px;margin:0 auto}
-:is(#v-stock,#v-reagent) .status-date{font-size:12.5px;color:var(--s-mute);margin-bottom:14px}
-:is(#v-stock,#v-reagent) .section{margin-bottom:22px}
-:is(#v-stock,#v-reagent) .section-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-left:2px}
-:is(#v-stock,#v-reagent) .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-:is(#v-stock,#v-reagent) .dot.growth{background:var(--s-brick)}
-:is(#v-stock,#v-reagent) .dot.fluid{background:#3E6FA8}
-:is(#v-stock,#v-reagent) .dot.vaccine{background:#3E8E5A}
-:is(#v-stock,#v-reagent) .section-title{font-size:14.5px;font-weight:600}
-:is(#v-stock,#v-reagent) .s-card{background:var(--s-paper);border:1px solid var(--s-line);border-radius:14px;overflow:hidden}
-:is(#v-stock,#v-reagent) .s-item{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--s-line)}
-:is(#v-stock,#v-reagent) .s-item:last-child{border-bottom:none}
-:is(#v-stock,#v-reagent) .item-name{font-size:15px;font-weight:500}
-:is(#v-stock,#v-reagent) .item-qty{font-size:13px;color:var(--s-brick);background:var(--s-brick-soft);padding:4px 10px;border-radius:20px;font-weight:600;white-space:nowrap}
-:is(#v-stock,#v-reagent) .full-item{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--s-line);gap:10px}
-:is(#v-stock,#v-reagent) .full-item:last-child{border-bottom:none}
-:is(#v-stock,#v-reagent) .full-item-left{flex:1;min-width:0}
-:is(#v-stock,#v-reagent) .full-item-name{font-size:14.5px;font-weight:500}
-:is(#v-stock,#v-reagent) .full-item-expiry{font-size:11px;color:var(--s-mute);margin-top:2px}
-:is(#v-stock,#v-reagent) .full-item-nums{font-size:12px;color:var(--s-mute);white-space:nowrap}
-:is(#v-stock,#v-reagent) .badge{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap}
-:is(#v-stock,#v-reagent) .badge.ok{background:var(--s-sage-soft);color:var(--s-sage)}
-:is(#v-stock,#v-reagent) .badge.low{background:var(--s-brick-soft);color:var(--s-brick)}
-:is(#v-stock,#v-reagent) .exp-item{padding:13px 16px;border-bottom:1px solid var(--s-line)}
-:is(#v-stock,#v-reagent) .exp-item:last-child{border-bottom:none}
-:is(#v-stock,#v-reagent) .exp-row{display:flex;justify-content:space-between;align-items:center}
-:is(#v-stock,#v-reagent) .exp-name{font-size:14.5px;font-weight:500}
-:is(#v-stock,#v-reagent) .exp-cat{font-size:11.5px;color:var(--s-mute);margin-top:2px}
-:is(#v-stock,#v-reagent) .exp-badge{font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
-:is(#v-stock,#v-reagent) .exp-badge.danger{background:var(--s-brick-soft);color:var(--s-brick)}
-:is(#v-stock,#v-reagent) .exp-badge.warning{background:var(--s-amber-soft);color:var(--s-amber)}
-:is(#v-stock,#v-reagent) .exp-badge.normal{background:#ECE8DC;color:var(--s-mute)}
-:is(#v-stock,#v-reagent) .exp-date{font-size:11px;color:var(--s-mute);margin-top:4px}
-:is(#v-stock,#v-reagent) .empty-state{background:var(--s-sage-soft);border:1px solid #CFE4D8;border-radius:14px;padding:26px 18px;text-align:center}
-:is(#v-stock,#v-reagent) .empty-state .big{font-size:15px;font-weight:600;color:var(--s-sage);margin-bottom:4px}
-:is(#v-stock,#v-reagent) .empty-state .small{font-size:13px;color:#4E6E5E}
-:is(#v-stock,#v-reagent) .err-state{background:var(--s-amber-soft);border:1px solid #E6D6B0;border-radius:14px;padding:16px 18px;font-size:13px;color:var(--s-amber)}
-:is(#v-stock,#v-reagent) .err-state a{color:inherit;font-weight:700}
-:is(#v-stock,#v-reagent) .price-details{margin-top:16px;background:var(--s-paper);border:1px solid var(--s-line);border-radius:14px;overflow:hidden}
-:is(#v-stock,#v-reagent) .price-summary{list-style:none;cursor:pointer;padding:14px 16px;font-size:14px;font-weight:700;color:var(--s-teal);display:flex;align-items:center;justify-content:space-between}
-:is(#v-stock,#v-reagent) .price-summary::-webkit-details-marker{display:none}
-:is(#v-stock,#v-reagent) .price-summary .chev{transition:transform 0.15s ease;font-size:12px;color:var(--s-mute)}
-:is(#v-stock,#v-reagent) .price-details[open] .price-summary .chev{transform:rotate(180deg)}
-:is(#v-stock,#v-reagent) .price-note-top{font-size:11px;color:var(--s-mute);padding:0 16px 10px;border-bottom:1px solid var(--s-line)}
-:is(#v-stock,#v-reagent) .price-group-label{font-size:11.5px;font-weight:700;color:var(--s-mute);padding:10px 16px 4px;background:#F2EFE6}
-:is(#v-stock,#v-reagent) .price-row{padding:11px 16px;border-bottom:1px solid var(--s-line);display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-:is(#v-stock,#v-reagent) .price-row:last-child{border-bottom:none}
-:is(#v-stock,#v-reagent) .price-left{flex:1;min-width:0}
-:is(#v-stock,#v-reagent) .price-name{font-size:13.5px;font-weight:600}
-:is(#v-stock,#v-reagent) .price-meta{font-size:11.5px;color:var(--s-mute);margin-top:2px}
-:is(#v-stock,#v-reagent) .price-note{font-size:11px;color:var(--s-amber);margin-top:2px}
-:is(#v-stock,#v-reagent) .price-amount{font-size:13px;font-weight:700;color:var(--s-teal);white-space:nowrap;text-align:right}
-:is(#v-stock,#v-reagent) .price-amount .unit{display:block;font-size:10.5px;font-weight:500;color:var(--s-mute)}
-:is(#v-stock,#v-reagent) .s-foot{max-width:520px;margin:30px auto 0;padding:0 18px;text-align:center}
-:is(#v-stock,#v-reagent) .s-foot .updated{display:block;font-size:11.5px;color:var(--s-mute)}
-:is(#v-stock,#v-reagent) .skel{height:52px;border-bottom:1px solid var(--s-line);background:linear-gradient(90deg,transparent,#ECE8DC,transparent);background-size:200% 100%;animation:stkp 1.1s linear infinite}
+:is(#v-stock,#v-reagent,#v-money) .in{padding:0;max-width:none;width:100%;margin:0;gap:0;display:block}
+:is(#v-stock,#v-reagent,#v-money) .hero2{background:var(--s-teal);color:var(--s-paper);padding:calc(16px + env(safe-area-inset-top,0px)) 20px 18px;border-radius:0 0 28px 28px}
+:is(#v-stock,#v-reagent,#v-money) .hero-top{display:flex;justify-content:space-between;align-items:flex-start}
+:is(#v-stock,#v-reagent,#v-money) .clinic-name{font-size:18px;font-weight:700;letter-spacing:-0.01em}
+:is(#v-stock,#v-reagent,#v-money) .clinic-sub{font-size:12.5px;opacity:0.7;margin-top:3px}
+:is(#v-stock,#v-reagent,#v-money) .hero-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+:is(#v-stock,#v-reagent,#v-money) .hubpill{min-height:40px;font-size:.88rem;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);border-radius:999px;padding:0 14px 0 10px}
+:is(#v-stock,#v-reagent,#v-money) .hubpill:active{background:rgba(255,255,255,.25)}
+:is(#v-stock,#v-reagent,#v-money) .refresh-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.28);color:var(--s-paper);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;font:inherit;min-height:0}
+:is(#v-stock,#v-reagent,#v-money) .refresh-btn:disabled{opacity:.5}
+:is(#v-stock,#v-reagent,#v-money) .s-tabs{display:flex;gap:5px;margin-top:18px}
+:is(#v-stock,#v-reagent,#v-money) .s-tab{flex:1;text-align:center;padding:9px 4px;border-radius:10px;font-size:11.8px;font-weight:600;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.75);cursor:pointer;border:1px solid rgba(255,255,255,0.16);white-space:nowrap;font-family:inherit}
+:is(#v-stock,#v-reagent,#v-money) .s-tab.active{background:var(--s-paper);color:var(--s-teal);border-color:var(--s-paper)}
+:is(#v-stock,#v-reagent,#v-money) .content{padding:20px 18px 0;max-width:520px;margin:0 auto}
+:is(#v-stock,#v-reagent,#v-money) .status-date{font-size:12.5px;color:var(--s-mute);margin-bottom:14px}
+:is(#v-stock,#v-reagent,#v-money) .section{margin-bottom:22px}
+:is(#v-stock,#v-reagent,#v-money) .section-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-left:2px}
+:is(#v-stock,#v-reagent,#v-money) .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+:is(#v-stock,#v-reagent,#v-money) .dot.growth{background:var(--s-brick)}
+:is(#v-stock,#v-reagent,#v-money) .dot.fluid{background:#3E6FA8}
+:is(#v-stock,#v-reagent,#v-money) .dot.vaccine{background:#3E8E5A}
+:is(#v-stock,#v-reagent,#v-money) .section-title{font-size:14.5px;font-weight:600}
+:is(#v-stock,#v-reagent,#v-money) .s-card{background:var(--s-paper);border:1px solid var(--s-line);border-radius:14px;overflow:hidden}
+:is(#v-stock,#v-reagent,#v-money) .s-item{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--s-line)}
+:is(#v-stock,#v-reagent,#v-money) .s-item:last-child{border-bottom:none}
+:is(#v-stock,#v-reagent,#v-money) .item-name{font-size:15px;font-weight:500}
+:is(#v-stock,#v-reagent,#v-money) .item-qty{font-size:13px;color:var(--s-brick);background:var(--s-brick-soft);padding:4px 10px;border-radius:20px;font-weight:600;white-space:nowrap}
+:is(#v-stock,#v-reagent,#v-money) .full-item{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--s-line);gap:10px}
+:is(#v-stock,#v-reagent,#v-money) .full-item:last-child{border-bottom:none}
+:is(#v-stock,#v-reagent,#v-money) .full-item-left{flex:1;min-width:0}
+:is(#v-stock,#v-reagent,#v-money) .full-item-name{font-size:14.5px;font-weight:500}
+:is(#v-stock,#v-reagent,#v-money) .full-item-expiry{font-size:11px;color:var(--s-mute);margin-top:2px}
+:is(#v-stock,#v-reagent,#v-money) .full-item-nums{font-size:12px;color:var(--s-mute);white-space:nowrap}
+:is(#v-stock,#v-reagent,#v-money) .badge{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap}
+:is(#v-stock,#v-reagent,#v-money) .badge.ok{background:var(--s-sage-soft);color:var(--s-sage)}
+:is(#v-stock,#v-reagent,#v-money) .badge.low{background:var(--s-brick-soft);color:var(--s-brick)}
+:is(#v-stock,#v-reagent,#v-money) .exp-item{padding:13px 16px;border-bottom:1px solid var(--s-line)}
+:is(#v-stock,#v-reagent,#v-money) .exp-item:last-child{border-bottom:none}
+:is(#v-stock,#v-reagent,#v-money) .exp-row{display:flex;justify-content:space-between;align-items:center}
+:is(#v-stock,#v-reagent,#v-money) .exp-name{font-size:14.5px;font-weight:500}
+:is(#v-stock,#v-reagent,#v-money) .exp-cat{font-size:11.5px;color:var(--s-mute);margin-top:2px}
+:is(#v-stock,#v-reagent,#v-money) .exp-badge{font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
+:is(#v-stock,#v-reagent,#v-money) .exp-badge.danger{background:var(--s-brick-soft);color:var(--s-brick)}
+:is(#v-stock,#v-reagent,#v-money) .exp-badge.warning{background:var(--s-amber-soft);color:var(--s-amber)}
+:is(#v-stock,#v-reagent,#v-money) .exp-badge.normal{background:#ECE8DC;color:var(--s-mute)}
+:is(#v-stock,#v-reagent,#v-money) .exp-date{font-size:11px;color:var(--s-mute);margin-top:4px}
+:is(#v-stock,#v-reagent,#v-money) .empty-state{background:var(--s-sage-soft);border:1px solid #CFE4D8;border-radius:14px;padding:26px 18px;text-align:center}
+:is(#v-stock,#v-reagent,#v-money) .empty-state .big{font-size:15px;font-weight:600;color:var(--s-sage);margin-bottom:4px}
+:is(#v-stock,#v-reagent,#v-money) .empty-state .small{font-size:13px;color:#4E6E5E}
+:is(#v-stock,#v-reagent,#v-money) .err-state{background:var(--s-amber-soft);border:1px solid #E6D6B0;border-radius:14px;padding:16px 18px;font-size:13px;color:var(--s-amber)}
+:is(#v-stock,#v-reagent,#v-money) .err-state a{color:inherit;font-weight:700}
+:is(#v-stock,#v-reagent,#v-money) .price-details{margin-top:16px;background:var(--s-paper);border:1px solid var(--s-line);border-radius:14px;overflow:hidden}
+:is(#v-stock,#v-reagent,#v-money) .price-summary{list-style:none;cursor:pointer;padding:14px 16px;font-size:14px;font-weight:700;color:var(--s-teal);display:flex;align-items:center;justify-content:space-between}
+:is(#v-stock,#v-reagent,#v-money) .price-summary::-webkit-details-marker{display:none}
+:is(#v-stock,#v-reagent,#v-money) .price-summary .chev{transition:transform 0.15s ease;font-size:12px;color:var(--s-mute)}
+:is(#v-stock,#v-reagent,#v-money) .price-details[open] .price-summary .chev{transform:rotate(180deg)}
+:is(#v-stock,#v-reagent,#v-money) .price-note-top{font-size:11px;color:var(--s-mute);padding:0 16px 10px;border-bottom:1px solid var(--s-line)}
+:is(#v-stock,#v-reagent,#v-money) .price-group-label{font-size:11.5px;font-weight:700;color:var(--s-mute);padding:10px 16px 4px;background:#F2EFE6}
+:is(#v-stock,#v-reagent,#v-money) .price-row{padding:11px 16px;border-bottom:1px solid var(--s-line);display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+:is(#v-stock,#v-reagent,#v-money) .price-row:last-child{border-bottom:none}
+:is(#v-stock,#v-reagent,#v-money) .price-left{flex:1;min-width:0}
+:is(#v-stock,#v-reagent,#v-money) .price-name{font-size:13.5px;font-weight:600}
+:is(#v-stock,#v-reagent,#v-money) .price-meta{font-size:11.5px;color:var(--s-mute);margin-top:2px}
+:is(#v-stock,#v-reagent,#v-money) .price-note{font-size:11px;color:var(--s-amber);margin-top:2px}
+:is(#v-stock,#v-reagent,#v-money) .price-amount{font-size:13px;font-weight:700;color:var(--s-teal);white-space:nowrap;text-align:right}
+:is(#v-stock,#v-reagent,#v-money) .price-amount .unit{display:block;font-size:10.5px;font-weight:500;color:var(--s-mute)}
+:is(#v-stock,#v-reagent,#v-money) .s-foot{max-width:520px;margin:30px auto 0;padding:0 18px;text-align:center}
+:is(#v-stock,#v-reagent,#v-money) .s-foot .updated{display:block;font-size:11.5px;color:var(--s-mute)}
+:is(#v-stock,#v-reagent,#v-money) .skel{height:52px;border-bottom:1px solid var(--s-line);background:linear-gradient(90deg,transparent,#ECE8DC,transparent);background-size:200% 100%;animation:stkp 1.1s linear infinite}
 @keyframes stkp{to{background-position:-200% 0}}
-:is(#v-stock,#v-reagent) .badge.none{background:#ECE8DC;color:var(--s-mute)}
+:is(#v-stock,#v-reagent,#v-money) .badge.none{background:#ECE8DC;color:var(--s-mute)}
 #v-reagent .full-item-nums{text-align:right}
 #v-reagent .cold{font-size:10.5px;font-weight:700;color:#3E6FA8;background:#E6EEF7;border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:1px}
 #v-reagent .sec-count{font-size:12px;color:var(--s-mute);margin-left:auto}
@@ -278,19 +279,9 @@ button.item:active,a.item:active,#v-reagent .grp>summary:active{transform:scale(
 #v-reagent .setup{background:var(--s-paper);border:1px solid var(--s-line);border-radius:14px;padding:18px;font-size:13.5px;line-height:1.6}
 #v-reagent .setup b{color:var(--s-teal)}
 /* 입금 화면 — 기존 최근 입금 페이지 모양 */
-#v-money .mhead{display:flex;align-items:center;gap:10px}
-#v-money h1{font-size:1.1rem;margin:0;font-weight:700}
-#v-money .mhead .back{margin-left:auto}
-#v-money .msub{margin:0;color:#8c877c;font-size:.85rem}
-#v-money ul{list-style:none;margin:0;padding:0;background:var(--panel);border:1px solid var(--hair);border-radius:14px}
-#v-money li{display:flex;align-items:center;gap:6px;padding:13px 16px;border-top:1px solid var(--hair);font-size:.95rem}
-#v-money li:first-child{border-top:0}
-#v-money li b{color:var(--teal);margin-right:2px}
-#v-money li .amt{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
-#v-money li.empty{color:#8c877c}
-#v-money .mfoot{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;color:var(--muted)}
-#v-money .mfoot button{font:inherit;font-size:.76rem;font-weight:700;border:1px solid var(--hair);background:var(--panel);color:var(--teal);border-radius:999px;padding:4px 12px;cursor:pointer}
-#v-money .mfoot button:disabled{opacity:.5}
+#v-money .m-amt{font-size:14.5px;font-weight:700;color:var(--s-teal);font-variant-numeric:tabular-nums;white-space:nowrap}
+#v-money .m-empty{padding:18px 16px;font-size:13.5px;color:var(--s-mute)}
+#v-money .m-empty a{color:var(--s-teal);font-weight:700}
 </style>
 
 <!-- 홈 -->
@@ -338,7 +329,7 @@ button.item:active,a.item:active,#v-reagent .grp>summary:active{transform:scale(
         <button class="app misc" data-view="later"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/></svg></span><span class="lbl">그 외</span></button>
       </div>
     </section>
-    <p class="foot">마지막 수정 2026.11.10 · v35</p>
+    <p class="foot">마지막 수정 2026.11.10 · v36</p>
   </div></main>
 </div>
 
@@ -448,7 +439,7 @@ peak LH 9.95 (45분)
   <div class="bar"><button class="back">‹ 그 외</button><h2>입금 알림</h2></div>
   <div class="intro"><span class="pill">운영 중</span><p>하나은행 개인 계좌이체 문자만 네이버웍스로. 알림마다 최근 입금 5건이 함께 붙음. 잔고·출금·카드사·공단은 제외.</p></div>
   <div class="group">
-    <a class="item split" href="https://script.google.com/macros/s/AKfycbzYn8R_yUNu5tLpQryfHTq1bdWgJZ0FjyLbJT1dWVwqsPL7fCtemM0ONXUuoRbtiYKnAA/exec" style="text-decoration:none;color:inherit"><span><b>최근 입금 보기</b></span><span class="v">열기 ↗</span></a>
+    <button class="item split" data-view="money" style="border-left:0;border-right:0;border-top:0;background:none;font:inherit;color:inherit;text-align:left;width:100%;cursor:pointer"><span><b>최근 입금 보기</b></span><span class="v">열기 ›</span></button>
     <div class="item"><span class="k">구성</span><span class="v">MacroDroid → 구글 앱스스크립트 → 네이버웍스</span></div>
     <div class="item"><span class="k">알림이 안 올 때</span><span class="v">메시지 앱 채팅+(RCS)가 꺼져 있는지, MacroDroid가 실행 중인지 확인</span></div>
   </div>
@@ -459,7 +450,7 @@ peak LH 9.95 (45분)
   <div class="intro"><span class="pills"><span class="pill">운영 중</span><span class="when">백업 저장됨</span></span><p>생성기 전체 백업. 새 대화에서도 스킬이 불러와 같은 양식으로 만듭니다.</p></div>
   <div class="group">
     <div class="item path"><span class="k">저장 위치</span><span class="v">Claude outputs\키오름자동화\keyoreum_auto.zip</span></div>
-    <div class="item path"><span class="k">저장 위치</span><span class="v">Claude outputs\키오름_홀더_인쇄용_226x316.pdf</span></div>
+    <div class="item path"><span class="k">홀더 PDF</span><span class="v">Claude outputs\키오름_홀더_인쇄용_226x316.pdf</span></div>
     <div class="item"><span class="k">양식 기준</span><span class="v">프로젝트 문서 4개 (txt · PDF · 성장기록 · 임상병리 연동)</span></div>
   </div>
 </div></div>
@@ -501,11 +492,15 @@ peak LH 9.95 (45분)
   </div>
 </div></div>
 
-<div id="v-money" class="view dview" hidden><div class="in">
-  <div class="bar"><button class="back">‹ 자동화 허브</button><h2>최근 입금</h2></div>
-  <p class="msub">하나은행 개인 계좌이체 · 최근 10건</p>
-  <ul id="money-list"><li class="empty">불러오는 중…</li></ul>
-  <div class="mfoot"><span id="money-when"></span><button id="money-refresh" type="button">↻ 새로고침</button></div>
+<div id="v-money" class="view" hidden><div class="in">
+  <div class="hero2">
+    <div class="hero-nav"><button class="back hubpill" type="button">‹ 자동화 허브</button><button class="refresh-btn" id="money-refresh" type="button" aria-label="새로고침"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.36M21 4v5h-5"/></svg></button></div>
+    <div class="hero-top">
+      <div><div class="clinic-name">최근 입금</div><div class="clinic-sub" id="money-rel">하나은행 개인 계좌이체</div></div>
+    </div>
+  </div>
+  <div class="content"><div class="status-date">최근 10건</div><div class="s-card" id="money-list"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div></div>
+  <div class="s-foot"><span class="updated" id="money-when"></span></div>
 </div></div>
 
 <div id="v-stock" class="view" hidden><div class="in">
@@ -606,7 +601,7 @@ peak LH 9.95 (45분)
   try{
     var today=new Date(new Date().toDateString());
     var list=document.getElementById('schedlist');
-    if(list){list.innerHTML='';ALL.forEach(function(e){
+    if(list){list.innerHTML='';ALL.filter(function(e){return e.date>=today}).forEach(function(e){
       var row=document.createElement('div');row.className='step'+(e.date<today?' past':'');
       var b=document.createElement('b');b.textContent=e.label;
       var box=document.createElement('div');box.appendChild(document.createTextNode(e.title));
@@ -811,20 +806,23 @@ peak LH 9.95 (45분)
   var CKEY='kio_money_v1';
   var root=document.getElementById('v-money'); if(!root) return;
   var list=document.getElementById('money-list'),when=document.getElementById('money-when'),rbtn=document.getElementById('money-refresh');
-  var data=null,loading=false;
+  var data=null,loading=false,lastTs=0;
+  function ago(ts){var m=Math.floor((Date.now()-ts)/6e4);if(m<1)return'방금 갱신';if(m<60)return m+'분 전 갱신';var h=Math.floor(m/60);if(h<24)return h+'시간 전 갱신';return Math.floor(h/24)+'일 전 갱신'}
+  function showAgo(){var r=document.getElementById('money-rel');if(r)r.textContent=lastTs?'하나은행 계좌이체 · '+ago(lastTs):'하나은행 개인 계좌이체'}
+  setInterval(showAgo,30000);
   function parseCSV(t){var rows=[],row=[],f='',q=false;for(var i=0;i<t.length;i++){var c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}else{if(c==='"')q=true;else if(c===','){row.push(f);f=''}else if(c==='\n'){row.push(f);rows.push(row);row=[];f=''}else if(c!=='\r')f+=c}}if(f!==''||row.length){row.push(f);rows.push(row)}return rows}
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
   function stamp(ts){var d=new Date(ts);return (d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
   function render(ts){
     if(!data)return;
-    list.innerHTML=data.length?data.map(function(h){return'<li><b>'+esc(h[0])+'</b>'+esc(h[1])+' · '+esc(h[2])+'<span class="amt">'+esc(h[3])+'원</span></li>'}).join(''):'<li class="empty">아직 기록된 입금이 없습니다. 다음 입금부터 쌓입니다.</li>';
-    when.textContent=stamp(ts)+' 기준';
+    list.innerHTML=data.length?data.map(function(h){return'<div class="full-item"><div class="full-item-left"><div class="full-item-name">'+esc(h[2])+'</div><div class="full-item-expiry">'+esc(h[0])+' '+esc(h[1])+'</div></div><span class="m-amt">'+esc(h[3])+'원</span></div>'}).join(''):'<div class="m-empty">아직 기록된 입금이 없습니다. 다음 입금부터 쌓입니다.</div>';
+    lastTs=ts;when.textContent='마지막 업데이트 '+stamp(ts);showAgo();
   }
   function load(force){
     if(loading)return;loading=true;rbtn.disabled=true;
     fetch(URL+(force?'&_='+Date.now():''),{cache:force?'reload':'default'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.text()})
     .then(function(t){data=parseCSV(t).slice(1).filter(function(r){return r[0]&&r[2]});var ts=Date.now();try{localStorage.setItem(CKEY,JSON.stringify({ts:ts,data:data}))}catch(e){}render(ts)})
-    .catch(function(){if(!data)list.innerHTML='<li class="empty">불러오지 못했습니다. <a href="'+FALLBACK+'">기존 페이지</a>를 여세요.</li>';else when.textContent+=' · 갱신 실패'})
+    .catch(function(){if(!data)list.innerHTML='<div class="m-empty">불러오지 못했습니다. <a href="'+FALLBACK+'">기존 페이지</a>를 여세요.</div>';else{var r=document.getElementById('money-rel');if(r)r.textContent+=' · 새로 불러오지 못함'}})
     .then(function(){loading=false;rbtn.disabled=false});
   }
   try{var c=JSON.parse(localStorage.getItem(CKEY)||'null');if(c&&c.data){data=c.data;render(c.ts)}}catch(e){}

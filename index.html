@@ -11,7 +11,6 @@ const EV=[
   {date:'2026-10-28', label:'10/28',  card:'임상병리 장비 설치', stage:0, title:'임상병리 장비 설치 · 데이터 연동', sub:'임상병리실 PC 이름, 공유폴더 이름, 결과 엑셀 샘플 1개'},
   {date:'2026-10-29', label:'PC 세팅', card:'공유폴더 권한 설정',        stage:1, title:'PA · 임상병리사 공유폴더 권한',   sub:'간호사 PDF만 · PA 엑셀만 · 임상병리사 전체'},
   {date:'2026-11-03', label:'11월',   card:'11월 원내 검사 시작',        stage:2, title:'원내 검사 시작 · 결과지 표준문장', sub:'MAST만 씨젠 수탁, 나머지는 원내 결과로'},
-  {date:'2026-11-04', label:'11/4',   card:'허브 문구 수정 (씨젠 → 원내)',  stage:2, title:'허브 txt·PDF 상세 문구 수정',   sub:'"씨젠 조회·로그인" → "원내 검사 결과, MAST만 씨젠" (검토 2·3번)'},
   {date:'2027-01-08', label:'1/8',    card:'輸入確認証 6개월분 가능 여부 확인', stage:null, title:'輸入確認証(薬監証明) 확인', sub:'기존 일본 환자 다음 방문 때 영문 처방서로 신청 시험 · 간토신에쓰 후생국(048-740-0800)에 6개월분·정상아 적용 여부 문의'},
   {date:'2027-01-15', label:'1/15',   card:'메디컬코리아 2027 사전등록',  stage:null, title:'메디컬코리아 2027 사전등록 확인', sub:'보건산업진흥원 공고 확인 → 일반 참관 사전등록 (3월 코엑스, 휴진일에 방문)'}
 ];
@@ -104,7 +103,7 @@ main .in{padding-block:6px 40px}
 html{overflow-x:hidden;max-width:100%}
 body{overflow-x:clip;max-width:100%}
 .bar{display:flex;align-items:center;gap:14px;padding-block:8px;margin-bottom:-8px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg)}
-.back{flex:none;display:inline-flex;align-items:center;gap:2px;min-height:44px;font:inherit;font-weight:700;font-size:.88rem;border:1px solid var(--hair);background:var(--panel);color:var(--teal);border-radius:999px;padding:0 14px 0 10px;cursor:pointer}
+.back{flex:none;display:inline-flex;align-items:center;gap:2px;min-height:40px;white-space:nowrap;font:inherit;font-weight:700;font-size:.88rem;border:1px solid var(--hair);background:var(--panel);color:var(--teal);border-radius:999px;padding:0 14px 0 10px;cursor:pointer}
 .back:active{background:var(--mint)}
 .bar h2{padding-left:14px;border-left:1px solid var(--hair);line-height:1.2}
 .dview h2{margin:0;font-weight:700;font-size:1.15rem;letter-spacing:-.03em}
@@ -186,12 +185,14 @@ html.no-vt .view{animation:kv-view .25s cubic-bezier(.32,.72,0,1)}
 #v-stock{--s-bg:#F2EFE6;--s-ink:#16241F;--s-teal:#1F4F45;--s-brick:#B94F3D;--s-brick-soft:#F7E7E2;--s-sage:#3C8465;--s-sage-soft:#E4F1E9;--s-amber:#B8863B;--s-amber-soft:#F5ECDB;--s-line:#D9D3C3;--s-paper:#FBFAF6;--s-mute:#8B8778;
   background:var(--s-bg);color:var(--s-ink);font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;-webkit-font-smoothing:antialiased;line-height:normal;letter-spacing:0;word-break:normal;min-height:100vh;margin-bottom:-40px;padding-bottom:48px;display:block}
 #v-stock .in{padding:0;max-width:none;width:100%;margin:0;gap:0;display:block}
-#v-stock .hero2{background:var(--s-teal);color:var(--s-paper);padding:calc(24px + env(safe-area-inset-top,0px)) 20px 18px;border-radius:0 0 28px 28px}
+#v-stock .hero2{background:var(--s-teal);color:var(--s-paper);padding:calc(16px + env(safe-area-inset-top,0px)) 20px 18px;border-radius:0 0 28px 28px}
 #v-stock .hero-top{display:flex;justify-content:space-between;align-items:flex-start}
 #v-stock .clinic-name{font-size:18px;font-weight:700;letter-spacing:-0.01em}
 #v-stock .clinic-sub{font-size:12.5px;opacity:0.7;margin-top:3px}
-#v-stock .hbtns{display:flex;gap:6px}
-#v-stock .refresh-btn,#v-stock .home-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.28);color:var(--s-paper);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;font:inherit;min-height:0}
+#v-stock .hero-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+#v-stock .hubpill{min-height:40px;font-size:.88rem;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);border-radius:999px;padding:0 14px 0 10px}
+#v-stock .hubpill:active{background:rgba(255,255,255,.25)}
+#v-stock .refresh-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.28);color:var(--s-paper);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;font:inherit;min-height:0}
 #v-stock .refresh-btn:disabled{opacity:.5}
 #v-stock .s-tabs{display:flex;gap:5px;margin-top:18px}
 #v-stock .s-tab{flex:1;text-align:center;padding:9px 4px;border-radius:10px;font-size:11.8px;font-weight:600;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.75);cursor:pointer;border:1px solid rgba(255,255,255,0.16);white-space:nowrap;font-family:inherit}
@@ -310,20 +311,18 @@ html.no-vt .view{animation:kv-view .25s cubic-bezier(.32,.72,0,1)}
     </section>
 
     <section class="sec etc">
-      <h2>준비 · 기타</h2>
-      <p class="desc">운영 중 · 준비</p>
       <div class="apps">
         <button class="app misc" data-view="later"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/></svg></span><span class="lbl">그 외</span></button>
       </div>
     </section>
-    <p class="foot">마지막 수정 2026.10.23 · v30</p>
+    <p class="foot">마지막 수정 2026.11.10 · v31</p>
   </div></main>
 </div>
 
 <!-- 상세 -->
 <div id="v-txt" class="view dview" hidden><div class="in">
-  <div class="bar"><button class="back">‹ 홈</button><h2>검사결과 txt</h2></div>
-  <div class="intro"><span class="pill">운영 중</span><p>예약표 캡처 → 씨젠 조회 → 원장 기준 판정. 크롬 씨젠 로그인 필요.</p></div>
+  <div class="bar"><button class="back">‹ 자동화 허브</button><h2>검사결과 txt</h2></div>
+  <div class="intro"><span class="pill">운영 중</span><p>예약표 캡처 → 원내 검사 결과 → 원장 기준 판정. MAST만 씨젠.</p></div>
   <div><div class="group-h">이렇게 말하세요</div><div class="group">
     <button class="copy" data-copy="txt"><span class="v">txt</span></button>
     <div class="item"><span class="k">사용법</span><span class="v">예약표 캡처 붙이고 txt 한 단어만 — 이름 없이 바로 정리됨</span></div>
@@ -398,20 +397,20 @@ peak LH 9.95 (45분)
 </div></div>
 
 <div id="v-pdf" class="view dview" hidden><div class="in">
-  <div class="bar"><button class="back">‹ 홈</button><h2>결과지 PDF</h2></div>
+  <div class="bar"><button class="back">‹ 자동화 허브</button><h2>결과지 PDF</h2></div>
   <div class="intro"><span class="pill">운영 중</span><p>보호자용 결과지. 성장곡선 엑셀이 있으면 성장기록을 앞장에 합칩니다.</p></div>
   <div><div class="group-h">이렇게 말하세요</div><div class="group">
     <button class="copy" data-copy="PDF"><span class="v">이름 PDF</span></button>
     <div><div class="pv-h">양식 미리보기 <span>예시 환자 · 7쪽 · 옆으로 밀어서 보기</span></div><div class="strip" id="pdfstrip"><figure><img src="forms/pdf-1.jpg" alt="결과지 1쪽" loading="lazy"><figcaption>1/7 성장 기록</figcaption></figure><figure><img src="forms/pdf-2.jpg" alt="결과지 2쪽" loading="lazy"><figcaption>2/7 검사 소견</figcaption></figure><figure><img src="forms/pdf-3.jpg" alt="결과지 3쪽" loading="lazy"><figcaption>3/7 검사결과 ①</figcaption></figure><figure><img src="forms/pdf-4.jpg" alt="결과지 4쪽" loading="lazy"><figcaption>4/7 검사결과 ②</figcaption></figure><figure><img src="forms/pdf-5.jpg" alt="결과지 5쪽" loading="lazy"><figcaption>5/7 검사결과 ③</figcaption></figure><figure><img src="forms/pdf-6.jpg" alt="결과지 6쪽" loading="lazy"><figcaption>6/7 검사결과 ④</figcaption></figure><figure><img src="forms/pdf-7.jpg" alt="결과지 7쪽" loading="lazy"><figcaption>7/7 검사 안내</figcaption></figure></div><div class="dots" id="pdfdots"></div></div>
 </div></div>
   <div><div class="group-h">정보</div><div class="group">
-    <div class="item"><span class="k">필요한 것</span><span class="v">씨젠 결과(자동 조회) · 소아성장관리 엑셀</span></div>
+    <div class="item"><span class="k">필요한 것</span><span class="v">원내 검사 결과(임상병리 데이터엑셀) · MAST는 씨젠 · 소아성장관리 엑셀</span></div>
     <div class="item path"><span class="k">저장 위치</span><span class="v">★ 검사결과 PDF파일\연도 결과\연도 월\</span></div>
   </div></div>
 </div></div>
 
 <div id="v-growth" class="view dview" hidden><div class="in">
-  <div class="bar"><button class="back">‹ 홈</button><h2>성장기록</h2></div>
+  <div class="bar"><button class="back">‹ 자동화 허브</button><h2>성장기록</h2></div>
   <div class="intro"><span class="pill">운영 중</span><p>소아성장관리 엑셀 → 키·체중 곡선, 골연령, MPH 한 장.</p></div>
   <div><div class="group-h">이렇게 말하세요</div><div class="group">
     <button class="copy" data-copy="성장곡선"><span class="v">이름 성장곡선</span></button>
@@ -443,7 +442,7 @@ peak LH 9.95 (45분)
 </div></div>
 
 <div id="v-schedule" class="view dview" hidden><div class="in">
-  <div class="bar"><button class="back">‹ 홈</button><h2>일정</h2></div>
+  <div class="bar"><button class="back">‹ 자동화 허브</button><h2>일정</h2></div>
   <div class="group" id="schedlist"></div>
 </div></div>
 
@@ -467,7 +466,7 @@ peak LH 9.95 (45분)
 </div></div>
 
 <div id="v-holder" class="view dview" hidden><div class="in">
-  <div class="bar"><button class="back">‹ 홈</button><h2>결과지 홀더</h2></div>
+  <div class="bar"><button class="back">‹ 자동화 허브</button><h2>결과지 홀더</h2></div>
   <div class="intro"><span class="pills"><span class="pill">운영 중</span><span class="when">인쇄용 확정</span></span><p>226×316mm · 재단 3mm · 인쇄소 전달용 PDF 준비됨.</p></div>
   <div><div class="pv-h">양식 미리보기 <span>누르면 크게</span></div><div class="pair">
     <figure><img src="forms/holder-1.jpg" alt="홀더 앞면" loading="lazy"><figcaption>앞면</figcaption></figure>
@@ -480,7 +479,7 @@ peak LH 9.95 (45분)
 </div></div>
 
 <div id="v-money" class="view dview" hidden><div class="in">
-  <div class="mhead"><h1>최근 입금</h1><button class="back">‹ 홈</button></div>
+  <div class="bar"><button class="back">‹ 자동화 허브</button><h2>최근 입금</h2></div>
   <p class="msub">하나은행 개인 계좌이체 · 최근 10건</p>
   <ul id="money-list"><li class="empty">불러오는 중…</li></ul>
   <div class="mfoot"><span id="money-when"></span><button id="money-refresh" type="button">↻ 새로고침</button></div>
@@ -488,12 +487,9 @@ peak LH 9.95 (45분)
 
 <div id="v-stock" class="view" hidden><div class="in">
   <div class="hero2">
+    <div class="hero-nav"><button class="back hubpill" type="button">‹ 자동화 허브</button><button class="refresh-btn" id="stk-refresh" type="button" aria-label="새로고침"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.36M21 4v5h-5"/></svg></button></div>
     <div class="hero-top">
-      <div><div class="clinic-name">키오름성장의원</div><div class="clinic-sub">약품 재고 알림</div></div>
-      <div class="hbtns">
-        <button class="refresh-btn" id="stk-refresh" type="button" aria-label="새로고침"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.36M21 4v5h-5"/></svg></button>
-        <button class="home-btn back" type="button" aria-label="홈"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/></svg></button>
-      </div>
+      <div><div class="clinic-name">약품 재고</div><div class="clinic-sub" id="stk-rel">키오름성장의원</div></div>
     </div>
     <div class="s-tabs" id="stk-tabs">
       <div class="s-tab active" data-tab="alert">부족 알림</div>
@@ -508,16 +504,16 @@ peak LH 9.95 (45분)
 </div></div>
 
 <div id="v-reagent" class="view dview" hidden><div class="in">
-  <div class="bar"><button class="back">‹ 홈</button><h2>시약관리</h2></div>
-  <div class="intro"><span class="pills"><span class="pill wait">준비</span><span class="when">11월</span></span><p>시약 재고·유효기간 관리. 11월 사용량 보고 안전재고 설정. 발주는 임상병리사.</p></div>
+  <div class="bar"><button class="back">‹ 자동화 허브</button><h2>시약관리</h2></div>
+  <div class="intro"><span class="pills"><span class="pill wait">준비</span><span class="when">11월</span></span><p>시약 재고·유효기간 관리. 월 1회 낱개 실사, 안전재고는 임상병리사가 품목별로 입력. 발주는 임상병리사(이엔바이오).</p></div>
   <div class="group">
-    <div class="item"><span class="k">구성 예정</span><span class="v">시약별 재고 · 안전재고 미달 · 유효기간 · 일일 사용량</span></div>
-    <div class="item"><span class="k">필요한 것</span><span class="v">장비별 시약 목록과 포장 단위(임상병리사 정리)</span></div>
+    <div class="item"><span class="k">구성</span><span class="v">구글 시트 「키오름성장의원_시약재고관리」 — 시약재고 · 발주목록 · 입고기록 · 사용안내</span></div>
+    <div class="item"><span class="k">쓰는 법</span><span class="v">입고 때 LOT·입고일·유효기한 기록, 한 달에 한 번 보유 낱개 수 입력</span></div>
   </div>
 </div></div>
 
 <div id="v-later" class="view dview" hidden><div class="in">
-  <div class="bar"><button class="back">‹ 홈</button><h2>그 외</h2></div>
+  <div class="bar"><button class="back">‹ 자동화 허브</button><h2>그 외</h2></div>
   <div><div class="group-h">운영 중</div><div class="group">
     <button class="item split" data-view="deposit" style="border-left:0;border-right:0;border-bottom:0;background:none;font:inherit;color:inherit;text-align:left;width:100%;cursor:pointer"><span>입금 알림 설정</span><span class="v">운영 중 ›</span></button>
     <button class="item split" data-view="backup" style="border-left:0;border-right:0;border-bottom:0;background:none;font:inherit;color:inherit;text-align:left;width:100%;cursor:pointer"><span>백업 · 스킬</span><span class="v">운영 중 ›</span></button>
@@ -613,7 +609,10 @@ peak LH 9.95 (45분)
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
   function stamp(ts){var d=new Date(ts);return{date:(d.getMonth()+1)+'월 '+d.getDate()+'일',time:String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}}
   var lastTs=0;
-  function setWhen(ts){lastTs=ts;var t=stamp(ts);var u=document.getElementById('stk-upd');if(u)u.textContent='마지막 업데이트 '+t.date+' '+t.time}
+  function ago(ts){var m=Math.floor((Date.now()-ts)/6e4);if(m<1)return'방금 갱신';if(m<60)return m+'분 전 갱신';var h=Math.floor(m/60);if(h<24)return h+'시간 전 갱신';return Math.floor(h/24)+'일 전 갱신'}
+  function showAgo(){var r=document.getElementById('stk-rel');if(r)r.textContent=lastTs?'키오름성장의원 · '+ago(lastTs):'키오름성장의원'}
+  setInterval(showAgo,30000);
+  function setWhen(ts){lastTs=ts;var t=stamp(ts);var u=document.getElementById('stk-upd');if(u)u.textContent='마지막 업데이트 '+t.date+' '+t.time;showAgo()}
   var PRICE_LIST={basic:[
     {name:'제일하이비주',meta:'10ml/10A',price:16500,unit:1650,note:'마늘주사'},
     {name:'리보비타주',meta:'1ml/50A',price:13000,unit:260},
@@ -680,7 +679,7 @@ peak LH 9.95 (45분)
     
     Promise.all(SRC.map(function(s){return fetch(BASE+s.gid+(force?'&_='+Date.now():''),{cache:force?'reload':'default'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.text()}).then(toRows)}))
     .then(function(res){data={growth:res[0],fluid:res[1],vaccine:res[2]};var ts=Date.now();setWhen(ts);try{localStorage.setItem(CKEY,JSON.stringify({ts:ts,data:data}))}catch(e){}render()})
-    .catch(function(err){if(!data){body.innerHTML='<div class="err-state">재고 데이터를 불러오지 못했습니다. 네트워크를 확인하거나 <a href="'+FALLBACK+'">기존 재고 페이지</a>를 여세요.</div>'}else{var u=document.getElementById('stk-upd');if(u)u.textContent+=' · 갱신 실패'}})
+    .catch(function(err){if(!data){body.innerHTML='<div class="err-state">재고 데이터를 불러오지 못했습니다. 네트워크를 확인하거나 <a href="'+FALLBACK+'">기존 재고 페이지</a>를 여세요.</div>'}else{var u=document.getElementById('stk-upd');if(u)u.textContent+=' · 갱신 실패';var r=document.getElementById('stk-rel');if(r)r.textContent+=' · 새로 불러오지 못함'}})
     .then(function(){loading=false;rbtn.disabled=false});
   }
   try{var c=JSON.parse(localStorage.getItem(CKEY)||'null');if(c&&c.data){data=c.data;setWhen(c.ts);render()}}catch(e){}

@@ -62,12 +62,12 @@ const FIXP=[ // bep = 그 기간 손익분기 매출(만원). 순이익 = (매�
 <style>
 @view-transition{navigation:auto}
 ::view-transition-old(root),::view-transition-new(root){mix-blend-mode:normal}
-::view-transition-old(root){animation:kv-f-out .48s cubic-bezier(.32,.72,0,1) both;z-index:0}
-::view-transition-new(root){animation:kv-f-in .48s cubic-bezier(.32,.72,0,1) both;z-index:1;box-shadow:-10px 0 28px rgba(0,0,0,.14)}
-html[data-dir="f"]::view-transition-old(root){animation:kv-f-out .48s cubic-bezier(.32,.72,0,1) both;z-index:0}
-html[data-dir="f"]::view-transition-new(root){animation:kv-f-in .48s cubic-bezier(.32,.72,0,1) both;z-index:1;box-shadow:-10px 0 28px rgba(0,0,0,.14)}
-html[data-dir="b"]::view-transition-old(root){animation:kv-b-out .48s cubic-bezier(.32,.72,0,1) both;z-index:1;box-shadow:-10px 0 28px rgba(0,0,0,.14)}
-html[data-dir="b"]::view-transition-new(root){animation:kv-b-in .48s cubic-bezier(.32,.72,0,1) both;z-index:0}
+::view-transition-old(root){animation:kv-f-out .25s cubic-bezier(.32,.72,0,1) both;z-index:0}
+::view-transition-new(root){animation:kv-f-in .25s cubic-bezier(.32,.72,0,1) both;z-index:1;box-shadow:-10px 0 28px rgba(0,0,0,.14)}
+html[data-dir="f"]::view-transition-old(root){animation:kv-f-out .25s cubic-bezier(.32,.72,0,1) both;z-index:0}
+html[data-dir="f"]::view-transition-new(root){animation:kv-f-in .25s cubic-bezier(.32,.72,0,1) both;z-index:1;box-shadow:-10px 0 28px rgba(0,0,0,.14)}
+html[data-dir="b"]::view-transition-old(root){animation:kv-b-out .25s cubic-bezier(.32,.72,0,1) both;z-index:1;box-shadow:-10px 0 28px rgba(0,0,0,.14)}
+html[data-dir="b"]::view-transition-new(root){animation:kv-b-in .25s cubic-bezier(.32,.72,0,1) both;z-index:0}
 @keyframes kv-f-out{to{transform:translateX(-28%);filter:brightness(.93)}}
 @keyframes kv-f-in{from{transform:translateX(100%)}}
 @keyframes kv-b-out{to{transform:translateX(100%)}}

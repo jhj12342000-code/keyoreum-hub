@@ -166,18 +166,18 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--teal-bright);outlin
 @media (prefers-reduced-motion:reduce){#toast,.ico{transition:none}}
 @view-transition{navigation:auto}
 ::view-transition-old(root),::view-transition-new(root){mix-blend-mode:normal}
-::view-transition-old(root){animation:kv-b-out .48s cubic-bezier(.32,.72,0,1) both;z-index:1;box-shadow:-10px 0 28px rgba(0,0,0,.14)}
-::view-transition-new(root){animation:kv-b-in .48s cubic-bezier(.32,.72,0,1) both;z-index:0}
-html[data-dir="f"]::view-transition-old(root){animation:kv-f-out .48s cubic-bezier(.32,.72,0,1) both;z-index:0}
-html[data-dir="f"]::view-transition-new(root){animation:kv-f-in .48s cubic-bezier(.32,.72,0,1) both;z-index:1;box-shadow:-10px 0 28px rgba(0,0,0,.14)}
-html[data-dir="b"]::view-transition-old(root){animation:kv-b-out .48s cubic-bezier(.32,.72,0,1) both;z-index:1;box-shadow:-10px 0 28px rgba(0,0,0,.14)}
-html[data-dir="b"]::view-transition-new(root){animation:kv-b-in .48s cubic-bezier(.32,.72,0,1) both;z-index:0}
+::view-transition-old(root){animation:kv-b-out .25s cubic-bezier(.32,.72,0,1) both;z-index:1;box-shadow:-10px 0 28px rgba(0,0,0,.14)}
+::view-transition-new(root){animation:kv-b-in .25s cubic-bezier(.32,.72,0,1) both;z-index:0}
+html[data-dir="f"]::view-transition-old(root){animation:kv-f-out .25s cubic-bezier(.32,.72,0,1) both;z-index:0}
+html[data-dir="f"]::view-transition-new(root){animation:kv-f-in .25s cubic-bezier(.32,.72,0,1) both;z-index:1;box-shadow:-10px 0 28px rgba(0,0,0,.14)}
+html[data-dir="b"]::view-transition-old(root){animation:kv-b-out .25s cubic-bezier(.32,.72,0,1) both;z-index:1;box-shadow:-10px 0 28px rgba(0,0,0,.14)}
+html[data-dir="b"]::view-transition-new(root){animation:kv-b-in .25s cubic-bezier(.32,.72,0,1) both;z-index:0}
 @keyframes kv-f-out{to{transform:translateX(-28%);filter:brightness(.93)}}
 @keyframes kv-f-in{from{transform:translateX(100%)}}
 @keyframes kv-b-out{to{transform:translateX(100%)}}
 @keyframes kv-b-in{from{transform:translateX(-28%);filter:brightness(.93)}}
 @media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
-html.no-vt .view{animation:kv-view .42s cubic-bezier(.32,.72,0,1)}
+html.no-vt .view{animation:kv-view .25s cubic-bezier(.32,.72,0,1)}
 @keyframes kv-view{from{opacity:.4;transform:translateX(40px)}}
 @media (prefers-reduced-motion:reduce){html.no-vt .view{animation:none}}
 

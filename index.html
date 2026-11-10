@@ -164,6 +164,23 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--teal-bright);outlin
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:.84rem;opacity:0;transition:opacity .2s;pointer-events:none;max-width:88vw;white-space:nowrap}
 #toast.on{opacity:1}
 @media (prefers-reduced-motion:reduce){#toast,.ico{transition:none}}
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){mix-blend-mode:normal}
+::view-transition-old(root){animation:kv-b-out .48s cubic-bezier(.32,.72,0,1) both;z-index:1;box-shadow:-10px 0 28px rgba(0,0,0,.14)}
+::view-transition-new(root){animation:kv-b-in .48s cubic-bezier(.32,.72,0,1) both;z-index:0}
+html[data-dir="f"]::view-transition-old(root){animation:kv-f-out .48s cubic-bezier(.32,.72,0,1) both;z-index:0}
+html[data-dir="f"]::view-transition-new(root){animation:kv-f-in .48s cubic-bezier(.32,.72,0,1) both;z-index:1;box-shadow:-10px 0 28px rgba(0,0,0,.14)}
+html[data-dir="b"]::view-transition-old(root){animation:kv-b-out .48s cubic-bezier(.32,.72,0,1) both;z-index:1;box-shadow:-10px 0 28px rgba(0,0,0,.14)}
+html[data-dir="b"]::view-transition-new(root){animation:kv-b-in .48s cubic-bezier(.32,.72,0,1) both;z-index:0}
+@keyframes kv-f-out{to{transform:translateX(-28%);filter:brightness(.93)}}
+@keyframes kv-f-in{from{transform:translateX(100%)}}
+@keyframes kv-b-out{to{transform:translateX(100%)}}
+@keyframes kv-b-in{from{transform:translateX(-28%);filter:brightness(.93)}}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+html.no-vt .view{animation:kv-view .42s cubic-bezier(.32,.72,0,1)}
+@keyframes kv-view{from{opacity:.4;transform:translateX(40px)}}
+@media (prefers-reduced-motion:reduce){html.no-vt .view{animation:none}}
+
 
 /* 재고 화면 — 원본 Index.html 스타일 그대로 */
 #v-stock{--s-bg:#F2EFE6;--s-ink:#16241F;--s-teal:#1F4F45;--s-brick:#B94F3D;--s-brick-soft:#F7E7E2;--s-sage:#3C8465;--s-sage-soft:#E4F1E9;--s-amber:#B8863B;--s-amber-soft:#F5ECDB;--s-line:#D9D3C3;--s-paper:#FBFAF6;--s-mute:#8B8778;
@@ -519,25 +536,30 @@ peak LH 9.95 (45분)
   var views=document.querySelectorAll('.view'),cur='home',PARENT={deposit:'later',lab:'later',share:'later',backup:'later'};
   try{history.scrollRestoration='manual'}catch(err){}
   function valid(n){return /^[a-z]+$/.test(n||'')&&!!document.getElementById('v-'+n)}
+  var VT=!!document.startViewTransition&&!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches),booted=false;
+  if(!VT) document.documentElement.classList.add('no-vt');
   function open(name){
     if(!valid(name)) name='home';
     var target=document.getElementById('v-'+name);
-    views.forEach(function(v){v.hidden=(v!==target)});
-    cur=name; window.scrollTo(0,0);
+    function swap(){views.forEach(function(v){v.hidden=(v!==target)});window.scrollTo(0,0)}
+    cur=name;
+    if(VT&&booted){try{document.startViewTransition(swap);return}catch(err){}}
+    swap();
   }
   function st(){return history.state||{}}
   function push(o,hash){try{history.pushState(o,'',hash)}catch(err){}}
   function replace(o,hash){try{history.replaceState(o,'',hash)}catch(err){}}
-  function go(name){if(!valid(name)||name===cur)return;open(name);push({view:name,d:(st().d||0)+1},'#'+name)}
+  function dir(d){document.documentElement.setAttribute('data-dir',d)}
+  function go(name){if(!valid(name)||name===cur)return;dir('f');open(name);push({view:name,d:(st().d||0)+1},'#'+name)}
   function back(){
     if((st().d||0)>0){history.back();return}
-    var p=PARENT[cur]||'home';open(p);replace({view:p,d:0},p==='home'?location.pathname+location.search:'#'+p);
+    var p=PARENT[cur]||'home';dir('b');open(p);replace({view:p,d:0},p==='home'?location.pathname+location.search:'#'+p);
   }
   function closeLb(){var lb=document.getElementById('lb');if(lb)lb.remove()}
   window.addEventListener('popstate',function(e){
     var s=e.state||{view:(location.hash||'').slice(1)||'home',d:0};
     if(!s.lb) closeLb();
-    var v=valid(s.view)?s.view:'home'; if(v!==cur) open(v);
+    var v=valid(s.view)?s.view:'home'; if(v!==cur){dir('b');open(v)}
   });
   document.addEventListener('click',function(e){
     var v=e.target.closest('[data-view]'); if(v){go(v.getAttribute('data-view'));return}
@@ -553,6 +575,7 @@ peak LH 9.95 (45분)
   (function(){var s=document.getElementById('pdfstrip'),d=document.getElementById('pdfdots');if(!s||!d)return;var figs=s.querySelectorAll('figure');figs.forEach(function(){d.appendChild(document.createElement('i'))});function upd(){var k=0,best=1e9;figs.forEach(function(f,i){var dist=Math.abs(f.offsetLeft-s.scrollLeft);if(dist<best){best=dist;k=i}});d.querySelectorAll('i').forEach(function(el,i){el.classList.toggle('on',i===k)})}s.addEventListener('scroll',upd,{passive:true});upd()})();
   var h=(location.hash||'').slice(1);
   if(valid(h)&&h!=='home'){open(h);replace({view:h,d:0},'#'+h)}else{replace({view:'home',d:0})}
+  booted=true;
   try{var n=new Date();document.getElementById('today').textContent=(n.getMonth()+1)+'.'+String(n.getDate()).padStart(2,'0')}catch(err){}
   try{
     var today=new Date(new Date().toDateString());

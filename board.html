@@ -1,0 +1,549 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>키오름 경영 현황판</title><meta name="theme-color" content="#22504a"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>키오름 경영 현황판</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<script>
+// ===== 매달 여기만 갱신 =====
+// 새 달을 넣을 때: MK·M·REV·GH·PUB·VIS 끝에 한 칸씩, SM·ST 끝에 한 칸씩 추가, DRUG는 최근 달 값으로 교체.
+// 금액은 백만원 단위(×100 = 만원). 화면의 "최근 반영 ○○년 ○월", 약제 제목, 5억 경로 시작점은 자동으로 바뀝니다.
+const MK=['2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09','2026-10']; // 월 키(연-월), M과 같은 길이
+const M=['9월','10월','11월','12월','1월','2월','3월','4월','5월','6월','7월','8월','9월','10월'];                                     // 화면에 보이는 월 이름
+const REV=[1.29,26.49,37.85,51.64,68.61,108.07,116.38,116.79,163.19,162.34,230.99,244.14,245.18,247.30]; // 월매출
+const GH=[0.17,8.28,18.22,30.70,33.81,52.09,57.54,61.94,95.84,100.32,147.97,152.20,172.10,162.57];       // 그중 성장호르몬 주사
+const PUB=[0,0.78,1.63,1.57,2.00,2.92,4.46,5.48,8.45,8.88,11.05,12.74,14.84,15.91];                // 그중 사춘기 지연제
+const VIS=[9,153,171,219,352,470,542,510,626,612,808,917,771,814];                            // 환자 수(명, 진료비 산정내역 기준)
+// 성장호르몬 신규 시작. SM/ST는 MK와 같은 달부터 시작(2025.9~). ST_OFFSET은 SM이 MK보다 앞서 시작할 때만 그 칸 수.
+const ST_OFFSET=0;
+const SM=['25.9','10','11','12','26.1','2','3','4','5','6','7','8','9','10'];
+const ST=[1,10,13,8,16,21,16,18,28,13,27,21,30,22];
+// 초진 근사: 골연령 X-ray(ba, G6501+G6501600) 처방 횟수. 재진은 BA를 안 찍으므로 초진으로 봐도 무방(6개월 F/U 일부 포함). MK와 같은 달부터.
+const BA=[6,74,70,80,170,193,152,142,182,194,288,316,198,200];
+// 진료일 수(화~토 − 휴진, 단축진료는 1일). 모르는 달은 null. 2026.5~: 21,20,22,21,19,19
+const DAYS=[null,null,null,null,null,null,null,null,21,20,22,21,19,19];
+const DRUG=[ // M 마지막 달 기준 · [약제, 매출(백만), 이익률(모르면 null), 처방 횟수]
+ ['유트로핀 (12IU)',67.10,0.36,81],['그로트로핀',41.48,0.47,51],['노디트로핀',22.40,0.375,23],
+ ['에코펜 (유트로핀 카트리지)',19.10,0.45,18],['지노트로핀',12.50,0.261,11]];
+// 고정비(만원/월) 구간: 각 달은 from이 그 달 이하인 구간 중 가장 최근 것을 씁니다(과거 달은 안 바뀜).
+// 항목 = [이름, 만원, 묶음('rent' 임대료 | 'pay' 인건비 | 'etc' 그 외), 표시('추정' 등, 없으면 생략)]
+const FIXP=[ // bep = 그 기간 손익분기 매출(만원). 순이익 = (매출−bep)×50%, 4억 초과분 48%. 항목별 비용은 참고용
+ {from:'2025-09',bep:10000,items:[ // 개원 준비·초기(2025.9.30 개원). 간호사 2명
+  ['임대료 (관리비 포함)',1000,'rent'],
+  ['직원 인건비 (2명 · 간호사 2 · 세후 300씩, 4대보험·퇴직금 포함 1인 약 420)',840,'pay','추정'],
+  ['마케팅',600,'etc'],['대출 상환',200,'etc'],['소모품·운영비 (세무·보험·전기 등)',400,'etc','추정'],
+  ['뷰노 골연령 판독',250,'etc'],['차트·소방·캡스 등 고정비',200,'etc']]},
+ {from:'2026-01',bep:10000,items:[ // 인센티브 시작(근속 6개월 이상). 간호사 2명
+  ['임대료 (관리비 포함)',1000,'rent'],
+  ['직원 인건비 (2명 · 간호사 2 · 세후 300씩, 4대보험·퇴직금 포함 1인 약 420)',840,'pay','추정'],['인센티브',160,'pay'],
+  ['마케팅',600,'etc'],['대출 상환',200,'etc'],['소모품·운영비 (세무·보험·전기 등)',400,'etc','추정'],
+  ['뷰노 골연령 판독',250,'etc'],['차트·소방·캡스 등 고정비',200,'etc']]},
+ {from:'2026-05',bep:10700,items:[ // 간호사 3명
+  ['임대료 (관리비 포함)',1000,'rent'],
+  ['직원 인건비 (3명 · 간호사 3 · 세후 300씩, 4대보험·퇴직금 포함 1인 약 420)',1260,'pay','추정'],['인센티브',160,'pay'],
+  ['마케팅',600,'etc'],['대출 상환',200,'etc'],['소모품·운영비 (세무·보험·전기 등)',400,'etc','추정'],
+  ['뷰노 골연령 판독',250,'etc'],['차트·소방·캡스 등 고정비',200,'etc']]},
+ {from:'2026-06',bep:11300,items:[ // 간호사 3 + 방사선사 1
+  ['임대료 (관리비 포함)',1000,'rent'],
+  ['직원 인건비 (4명 · 간호사 3·방사선사 1 · 세후 300씩, 4대보험·퇴직금 포함 1인 약 420)',1680,'pay','추정'],['인센티브',160,'pay'],
+  ['마케팅',600,'etc'],['대출 상환',200,'etc'],['소모품·운영비 (세무·보험·전기 등)',400,'etc','추정'],
+  ['뷰노 골연령 판독',250,'etc'],['차트·소방·캡스 등 고정비',200,'etc']]},
+ {from:'2026-07',bep:12000,items:[ // 간호사 4 + 방사선사 1 + 행정실장 1
+  ['임대료 (관리비 포함)',1000,'rent'],
+  ['직원 인건비 (6명 · 간호사 4·방사선사·행정실장 · 세후 300씩, 4대보험·퇴직금 포함 1인 약 420)',2520,'pay','추정'],['인센티브',160,'pay'],
+  ['마케팅',600,'etc'],['대출 상환',200,'etc'],['소모품·운영비 (세무·보험·전기 등)',400,'etc','추정'],
+  ['뷰노 골연령 판독',250,'etc'],['차트·소방·캡스 등 고정비',200,'etc']]},
+ {from:'2026-11',bep:12000,items:[ // 옆호실 확장(임대료 +1,000) · 임상병리사 합류, 7명 유지
+  ['임대료 (관리비 포함)',2000,'rent'],
+  ['직원 인건비 (7명 · 간호사 4·방사선사·임상병리사·행정실장 · 세후 300씩, 4대보험·퇴직금 포함 1인 약 420)',2940,'pay','추정'],['인센티브',160,'pay'],
+  ['마케팅',600,'etc'],['대출 상환',200,'etc'],['소모품·운영비 (세무·보험·전기 등)',400,'etc','추정'],
+  ['뷰노 골연령 판독',250,'etc'],['차트·소방·캡스 등 고정비',200,'etc']]}
+];
+// LATEST_LABEL('2026년 9월')은 MK 마지막 값에서 자동으로 만들어집니다.
+// ===== 갱신 블록 끝 — 아래는 건드리지 않는 코드 =====
+</script>
+<style>
+/* Layout: one narrow column of ledger sections — KPI strip, monthly revenue, GH starts, drug mix, 5억 path, notes */
+:root{
+  --bg:#f2efe8; --surface:#faf8f3; --fg:#2b2b28; --muted:#6f6a60; --line:#e3ded3; --head:#22504a; --on-head:#ffffff; --tab:rgba(255,255,255,.12);
+  --gh:#22504a; --gh-soft:#a9c9c0; --puberty:#b8862c; --other:#cfc8b8;
+  --accent:#22504a; --good:#2e7d4f; --warn:#a8741a; --proj:#7fa39b;
+  --display:system-ui,-apple-system,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  --body:system-ui,-apple-system,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#161b19; --surface:#1c2320; --fg:#e8e5dd; --muted:#8f978f; --line:#2b3430; --head:#1d3f3a; --on-head:#ffffff; --tab:rgba(255,255,255,.08);
+  --gh:#8cc2b3; --gh-soft:#3b5d55; --puberty:#f0c46a; --other:#5a5f58;
+  --accent:#8cc2b3; --good:#6fcf97; --warn:#e0b060; --proj:#5e8a80; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#161b19; --surface:#1c2320; --fg:#e8e5dd; --muted:#8f978f; --line:#2b3430; --head:#1d3f3a; --on-head:#ffffff; --tab:rgba(255,255,255,.08);
+  --gh:#8cc2b3; --gh-soft:#3b5d55; --puberty:#f0c46a; --other:#5a5f58;
+  --accent:#8cc2b3; --good:#6fcf97; --warn:#e0b060; --proj:#5e8a80; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.6;word-break:keep-all;letter-spacing:-.01em}
+.wrap{max-width:980px;margin:0 auto;padding-block:20px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:28px}
+.top{background:var(--head);color:var(--on-head);border-radius:0 0 22px 22px}
+.top .in{max-width:980px;margin:0 auto;padding-block:16px 22px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:14px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{height:42px;width:auto;display:block}
+.brand div{display:grid;line-height:1.3}
+.brand b{font-weight:700;font-size:1.05rem}
+.brand span{font-size:.78rem;opacity:.75}
+.brand .upd{margin-left:auto;font-size:.74rem;opacity:.75;text-align:right}
+.hub{justify-self:start;display:inline-flex;align-items:center;min-height:40px;font-size:.88rem;font-weight:700;color:var(--on-head);text-decoration:none;border:1px solid rgba(255,255,255,.35);background:var(--tab);border-radius:999px;padding:0 14px 0 10px}
+.hub:active{background:rgba(255,255,255,.25)}
+h1{font-family:var(--display);font-size:1.75rem;font-weight:700;margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:.85rem}
+h2{font-family:var(--display);font-size:1.12rem;font-weight:700;margin:0;text-wrap:balance}
+.sec{display:flex;flex-direction:column;gap:12px}
+.sec-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 16px}
+.note{color:var(--muted);font-size:.82rem}
+.num{font-variant-numeric:tabular-nums;font-family:var(--display)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi .k{font-size:.78rem;color:var(--muted);letter-spacing:.02em}
+.kpi .v{font-family:var(--display);font-size:1.55rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.25}
+.kpi .v small{font-size:.8rem;font-weight:500;color:var(--muted);margin-left:2px}
+.kpi .d{font-size:.78rem;font-variant-numeric:tabular-nums}
+.up{color:var(--good)} .flat{color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 14px 10px;min-width:0}
+.chart{width:100%;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted);padding:6px 4px 0}
+.sw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+@media (max-width:640px){#drugTbl .x{display:none}#drugTbl{font-size:.8rem}#drugTbl th,#drugTbl td{padding:6px}#drugTbl th{white-space:normal}#drugTbl .nm small{display:block;font-size:.72rem;color:var(--muted);white-space:normal}}
+a{color:var(--accent)}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+th{font-weight:500;color:var(--muted);font-size:.78rem}
+th:first-child,td:first-child{text-align:left}
+tfoot td{font-weight:700;border-bottom:none}
+.bar{display:inline-block;height:8px;border-radius:4px;background:var(--gh);vertical-align:middle;margin-left:8px}
+.pill{display:inline-block;font-size:.72rem;padding:1px 8px;border-radius:10px;border:1px solid var(--line);color:var(--muted)}
+.pill.hi{border-color:var(--good);color:var(--good)} .pill.lo{border-color:var(--warn);color:var(--warn)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+ul.facts{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;max-width:68ch}
+ul.facts li::marker{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.chip{flex:none;font:inherit;font-size:.9rem;font-weight:500;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;min-height:40px;padding:0 16px;cursor:pointer;font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"]{background:var(--head);border-color:var(--head);color:#fff}
+.mcard{display:grid;gap:14px}
+.mk{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.mk div{display:grid;gap:2px}
+.mk .k{font-size:.76rem;color:var(--muted)}
+.mk .v{font-family:var(--display);font-size:1.35rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.25}
+.mk .v.na{font-size:1.05rem;color:var(--muted)}
+.mk .v small{font-size:.75rem;font-weight:500;color:var(--muted);margin-left:2px}
+.mk .d{font-size:.76rem}
+.mix{display:flex;height:12px;border-radius:6px;overflow:hidden}
+.mix i{display:block}
+#costTbl{min-width:0}
+#costTbl td:first-child{white-space:normal}
+#costTbl tr.sum td{font-weight:700;border-top:2px solid var(--line)}
+#costTbl tr.res td{font-weight:700;color:var(--accent);border-bottom:none;font-size:1rem}
+#costTbl tr.grp td{cursor:pointer}
+#costTbl .tg{color:var(--muted);font-size:.8rem;margin-left:4px}
+#costTbl tr.sub td{color:var(--muted);font-size:.82rem;padding-top:5px;padding-bottom:5px}
+#costTbl tr.sub td:first-child{padding-left:22px}
+#costTbl em{font-style:normal;font-size:.7rem;color:var(--warn);border:1px solid var(--warn);border-radius:8px;padding:0 5px;margin-left:4px}
+#mnote{margin-top:4px}
+.zoom{cursor:zoom-in}
+#lb{position:fixed;inset:0;background:var(--bg);z-index:50;display:grid;grid-template-rows:auto 1fr;padding:12px;gap:8px}
+#lb .lbh{display:flex;justify-content:space-between;align-items:center;font-weight:700}
+#lb button{font:inherit;font-weight:700;min-height:44px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:0 18px;cursor:pointer}
+#lb .lbh span{font-size:.95rem}
+#lb .hint{font-size:.78rem;color:var(--muted);text-align:center;padding-top:6px}
+#lb .lbc{overflow:auto;-webkit-overflow-scrolling:touch}
+#lb svg{width:900px;max-width:none;height:auto;display:block}
+@media (orientation:landscape){#lb svg{width:100%}}
+.dn{color:var(--warn)}
+details.fold>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 16px}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary h2::after{content:" ▾";color:var(--muted);font-size:.9rem}
+details.fold[open]>summary h2::after{content:" ▴"}
+@media (min-width:641px){details.fold>summary h2::after{content:""}}
+.mcard{touch-action:pan-y}
+.ln{display:inline-block;width:16px;height:2px;background:var(--fg);margin-right:6px;vertical-align:3px;position:relative}
+.ln::after{content:"";position:absolute;left:5px;top:-2px;width:6px;height:6px;border-radius:50%;background:var(--fg)}
+.todo{border-top:1px solid var(--line);padding-top:10px;display:grid;gap:2px;font-size:.85rem}
+.todo b{font-size:.76rem;font-weight:500;color:var(--muted)}
+.todo ul{margin:0;padding:0;list-style:none;display:grid;gap:2px}
+.todo li{color:var(--fg);padding-left:12px;position:relative}
+.todo li::before{content:"·";position:absolute;left:2px;color:var(--muted);font-weight:700}
+.todo li.done{color:var(--muted)}
+details.how{color:var(--muted);font-size:.82rem}
+details.how summary{cursor:pointer;min-height:32px;display:flex;align-items:center;list-style:none;color:var(--muted);font-size:.85rem}
+details.how summary::-webkit-details-marker{display:none}
+details.how[open] summary{color:var(--fg)}
+details.how .note{max-width:70ch;margin-top:6px}
+.ana{display:grid;gap:14px;padding:16px 16px 14px}
+.ana h3{margin:0 0 -6px;font-size:.84rem;font-weight:700;color:var(--accent)}
+.ana p,.ana li{margin:0;font-size:.9rem;line-height:1.65}
+.ana ul{margin:0;padding-left:1.1em;display:grid;gap:4px}
+.ana b{font-weight:700}
+</style>
+
+<header class="top"><div class="in">
+  <a class="hub" href="./">‹ 자동화 허브</a>
+  <div class="brand"><img src="data:image/png;base64,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" alt="키오름"><div><b>경영 현황판</b><span>키오름성장의원 · 개원 2025.09.30</span></div><span class="upd" id="upd">최근 반영</span></div>
+</div></header>
+<div class="wrap">
+
+  <section class="sec" id="monthly">
+    <div class="sec-head"><h2>월별 경영</h2><span class="note">월을 누르거나 카드를 옆으로 밀면 달이 바뀝니다</span></div>
+    <div class="chips" id="chips" role="group" aria-label="월 선택"></div>
+    <div class="panel mcard" id="mcard"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>월별 매출 구성과 순이익</h2><span class="note">단위 만원 · 폰은 최근 6개월 · 누르면 크게</span></div>
+    <div class="panel"><svg class="chart zoom" id="revChart" role="img" aria-label="월별 매출 막대그래프와 추정 순이익 선"></svg>
+      <div class="legend"><span><i class="sw" style="background:var(--gh)"></i>성장호르몬 주사</span><span><i class="sw" style="background:var(--puberty)"></i>사춘기 지연제</span><span><i class="sw" style="background:var(--other)"></i>그 외 (진찰·검사·수액 등)</span><span><i class="ln"></i>추정 순이익(선)</span></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>성장호르몬 신규 시작</h2><span class="note">성장호르몬 리스트의 본원 시작일 기준</span></div>
+    <div class="panel"><svg class="chart zoom" id="startChart" role="img" aria-label="월별 성장호르몬 신규 시작 환자 수"></svg>
+      <div class="legend"><span><i class="sw" style="background:var(--gh)"></i>월 신규 시작</span><span><i class="sw" style="background:var(--warn);height:3px;vertical-align:3px"></i>최근 3개월 평균</span></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>초진 수와 성장호르몬 전환율</h2><span class="note">초진 = 골연령 X-ray 촬영 건수(재진은 안 찍음) · 전환율 = 신규 시작 ÷ 초진</span></div>
+    <div class="panel"><svg class="chart zoom" id="baChart" role="img" aria-label="월별 초진 수와 성장호르몬 전환율"></svg>
+      <div class="legend"><span><i class="sw" style="background:var(--other)"></i>초진(골연령 촬영)</span><span><i class="ln"></i>전환율(선)</span></div>
+    </div>
+  </section>
+
+  <details class="sec fold" id="foldDrug">
+    <summary class="sec-head"><h2 id="drugH">성장호르몬 약제별 매출과 이익</h2><span class="note" id="drugNote">이익률은 원장님이 알려주신 약제별 값</span></summary>
+    <div class="panel tbl"><table id="drugTbl"></table></div>
+  </details>
+
+  <details class="sec fold" id="foldProj">
+    <summary class="sec-head"><h2>월매출 예상 경로</h2><span class="note">현재부터 1년 뒤까지 · 점선은 예상</span></summary>
+    <div class="panel"><svg class="chart zoom" id="projChart" role="img" aria-label="실제 월매출과 1년 뒤까지의 예상 월매출"></svg>
+      <div class="legend"><span><i class="sw" style="background:var(--gh)"></i>실제 월매출</span><span><i class="sw" style="background:var(--proj)"></i>예상 월매출</span></div>
+    </div>
+  </details>
+
+  <details class="sec fold" id="foldAna">
+    <summary class="sec-head"><h2>분석</h2><span class="note">숫자를 갱신하면 자동으로 다시 씁니다</span></summary>
+    <div class="panel ana" id="anaBody"></div>
+  </details>
+
+  <section class="sec">
+    <details class="how"><summary>ⓘ 계산 방법과 갱신 방법</summary>
+      <div class="note">순이익 추정 = (매출 − 손익분기) × 50%, 월매출 4억 초과분은 48% (세전·원장님 기준). 손익분기는 인원에 따라 2026년 4월까지 1억, 5월 1.07억, 6월 1.13억, 7월부터 1.2억. 9월 실제 순이익은 약 6,000만원입니다. 월별 카드의 항목별 비용은 참고용이며, 순이익은 이 식으로 계산합니다.</div>
+      <div class="note">매달 초 오름차트의 진료비 산정내역(월별)과 처방별 통계(주사) 화면 캡처, 성장호르몬 리스트 엑셀을 Claude에게 보내면 이 페이지의 숫자와 그래프를 갱신합니다. 초진 수는 처방별 통계(영상의학 · ba) 캡처에서 골연령 촬영 건수로, 진료일 수는 휴진 안내 기준(화~토 − 휴진)으로 넣습니다.</div>
+    </details>
+  </section>
+</div>
+
+<script>
+// ===== 건드리지 않는 코드 (데이터는 파일 맨 위 "매달 여기만 갱신" 블록) =====
+const RATE={gh:0.611,pub:0.67,oth:0.20,card:0.015}; // 원가율: 성장호르몬(9월 약제 가중 이익률 38.9%), 사춘기지연제(루프원만 이익), 그 외 20%, 카드수수료 1.5%
+const LAST=M.length-1;
+const ymLabel=k=>k?k.slice(0,4)+'년 '+(+k.slice(5,7))+'월':'';
+const LATEST_LABEL=ymLabel(MK[LAST]);
+const isNum=v=>typeof v==='number'&&isFinite(v);
+const stAt=i=>{const v=ST[i+ST_OFFSET];return isNum(v)?v:null}; // MK[i] 달 신규 시작, 없으면 null
+const visAt=i=>isNum(VIS[i])?VIS[i]:null;
+// 고정비 구간
+function fixFor(i){const k=MK[i]||MK[LAST];let p=null;for(const q of FIXP)if(q.from<=k&&(!p||q.from>p.from))p=q;return p||FIXP[0]}
+function prevPeriod(p){let r=null;for(const q of FIXP)if(q.from<p.from&&(!r||q.from>r.from))r=q;return r}
+function sinceTag(p,x){const r=prevPeriod(p);if(!r)return '';const o=r.items.find(y=>y[0]===x[0]);return (!o||o[1]!==x[1])?` <em>${+p.from.slice(5,7)}월~</em>`:''}
+function model(i){const R=REV[i]*100,G=GH[i]*100,P=PUB[i]*100,O=R-G-P;
+  const v=[['성장호르몬 약값',G*RATE.gh],['사춘기 지연제 약값',P*RATE.pub],['검사·수액 재료 등',O*RATE.oth],['카드 수수료',R*RATE.card]];
+  const fp=fixFor(i),F=fp.items;
+  const vs=v.reduce((a,x)=>a+x[1],0),fs=F.reduce((a,x)=>a+x[1],0);
+  const grp=g=>F.filter(x=>g==='etc'?(x[2]!=='rent'&&x[2]!=='pay'):x[2]===g);
+  // 순이익 추정(원장님 기준식): (매출 − 손익분기) × 50%, 월매출 4억 초과분은 48%. 항목별 비용(vs·fs)은 참고용으로만 표시
+  const B=fp.bep||12000; // 손익분기 매출(만원): 인원이 적던 2026.4까지 1억, 7월~ 1.2억
+  const net=R<=40000?(R-B)*0.5:(40000-B)*0.5+(R-40000)*0.48;
+  const adj=(R-net)-(vs+fs); // 항목별 비용과 순이익식의 차이 → 비용표에 '기타·미분류'로 표시해 합계를 맞춤
+  return {R,G,P,O,v,vs,fs,adj,net,fp,grp}}
+const W0=v=>Math.round(v).toLocaleString('ko-KR');
+const PREP=i=>MK[i]==='2025-09'; // 개원 준비 달(9.30 하루 진료) — 매출·순이익 숫자 대신 '개원 준비'로 표시
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmt=(v,d=1)=>v.toLocaleString('ko-KR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const svgNS='http://www.w3.org/2000/svg';
+function el(t,a,txt){const e=document.createElementNS(svgNS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e}
+const ceilTo=(v,s)=>Math.ceil(v/s)*s, floorTo=(v,s)=>Math.floor(v/s)*s;
+const PHONE=matchMedia('(max-width:640px)');
+// 그릴 막대 번호: 폰에서 12개를 넘으면 최근 12개만, PC는 전부
+const visIdx=(n,cap)=>{const a=[...Array(n).keys()];cap=cap||12;return PHONE.matches&&n>cap?a.slice(-cap):a};
+const labelFs=n=>n>12?12:(n>9?13:14);
+
+function axisY(svg,W,L,T,H,max,step,unit,f){
+  for(let v=0;v<=max;v+=step){const y=T+H-(v/max)*H;
+    svg.appendChild(el('line',{x1:L,x2:W-8,y1:y,y2:y,stroke:css('--line'),'stroke-width':1}));
+    svg.appendChild(el('text',{x:L-6,y:y+4,'text-anchor':'end','font-size':13,fill:css('--muted')},(f?f(v):v)+(unit||'')))}
+}
+function drawRev(){
+  // 만원 단위 세로축은 데이터에 맞춰 자동. 막대 = 매출 구성, 선+점 = 추정 순이익(model(i).net)
+  const s=document.getElementById('revChart');s.innerHTML='';const W=900,Hh=318,L=58,T=24,H=260;s.setAttribute('viewBox',`0 0 ${W} ${Hh}`);
+  const idx=visIdx(M.length,6),n=idx.length,nets=idx.filter(i=>!PREP(i)).map(i=>model(i).net),revs=idx.map(i=>REV[i]*100);
+  s.setAttribute('aria-label',`${ymLabel(MK[idx[0]])}부터 ${ymLabel(MK[idx[n-1]])}까지 월별 매출 막대그래프와 추정 순이익 선`);
+  const hi=Math.max(5000,ceilTo(Math.max(...revs,...nets)*1.1,5000));
+  const mn=Math.min(...nets),lo=mn<0?floorTo(mn*1.2,2500):0;
+  const step=(hi-lo)/5000>8?10000:5000;
+  const Y=v=>T+(hi-v)/(hi-lo)*H,y0=Y(0);
+  for(let v=0;v<=hi;v+=step){const y=Y(v);
+    s.appendChild(el('line',{x1:L,x2:W-8,y1:y,y2:y,stroke:css(v?'--line':'--muted'),'stroke-width':1}));
+    s.appendChild(el('text',{x:L-6,y:y+4,'text-anchor':'end','font-size':13,fill:css('--muted')},v.toLocaleString('ko-KR')))}
+  const bw=(W-L-16)/n,pts=[],lf=labelFs(n),vf=n>12?13:15,nf=n>12?12:14;
+  idx.forEach((i,j)=>{const x=L+j*bw+bw*0.2,w=bw*0.6;let y=y0;
+    for(const [v,c] of [[GH[i],'--gh'],[PUB[i],'--puberty'],[REV[i]-GH[i]-PUB[i],'--other']]){const h=v*100/(hi-lo)*H;y-=h;
+      s.appendChild(el('rect',{x,y,width:w,height:h,fill:css(c)}))}
+    s.appendChild(el('text',{x:x+w/2,y:y-7,'text-anchor':'middle','font-size':vf,'font-weight':700,fill:css('--fg')},PREP(i)?'개원 준비':W0(REV[i]*100)));
+    s.appendChild(el('text',{x:x+w/2,y:T+H+22,'text-anchor':'middle','font-size':lf,fill:css('--muted')},M[i]));
+    if(!PREP(i)){const nv=model(i).net;pts.push([x+w/2,Y(nv),nv]);}
+  });
+  const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  s.appendChild(el('path',{d,fill:'none',stroke:css('--surface'),'stroke-width':6,'stroke-linejoin':'round','stroke-linecap':'round'}));
+  s.appendChild(el('path',{d,fill:'none',stroke:css('--fg'),'stroke-width':2.2,'stroke-linejoin':'round',class:'netline'}));
+  pts.forEach(([x,y,v])=>{s.appendChild(el('circle',{cx:x,cy:y,r:3.6,fill:css('--fg'),stroke:css('--surface'),'stroke-width':1.5}));
+    // 적자 라벨은 0선 아래 빈 영역(점 왼쪽, 선과 반대편)에, 흑자 라벨은 점 위에
+    s.appendChild(el('text',{x:v<0?x-8:x,y:v<0?y+5:y-10,'text-anchor':v<0?'end':'middle','font-size':nf,'font-weight':600,fill:css('--fg'),stroke:css('--surface'),'stroke-width':4,'paint-order':'stroke','stroke-linejoin':'round'},(v<0?'−':'')+W0(Math.abs(v))))});
+}
+function drawStarts(){
+  const s=document.getElementById('startChart');s.innerHTML='';const W=900,Hh=256,L=40,T=22,H=190;s.setAttribute('viewBox',`0 0 ${W} ${Hh}`);
+  const idx=visIdx(SM.length),n=idx.length,val=i=>isNum(ST[i])?ST[i]:null;
+  const nums=idx.map(val).filter(v=>v!=null);
+  const max=Math.max(10,ceilTo(Math.max(0,...nums)*1.1,5));axisY(s,W,L,T,H,max,max>60?20:10);
+  const bw=(W-L-16)/n,lf=labelFs(n),vf=n>12?13:15;
+  const have=idx.filter(i=>val(i)!=null),lastI=have[have.length-1];
+  idx.forEach((i,j)=>{const x=L+j*bw+bw*0.22,w=bw*0.56,v=val(i);
+    s.appendChild(el('text',{x:x+w/2,y:T+H+22,'text-anchor':'middle','font-size':lf,fill:css('--muted')},SM[i]));
+    if(v==null){s.appendChild(el('text',{x:x+w/2,y:T+H-6,'text-anchor':'middle','font-size':12,fill:css('--muted')},'미입력'));return}
+    const h=v/max*H,y=T+H-h;
+    s.appendChild(el('rect',{x,y,width:w,height:h,rx:2,fill:i===lastI?css('--gh'):css('--gh-soft')}));
+    s.appendChild(el('text',{x:x+w/2,y:y-5,'text-anchor':'middle','font-size':vf,'font-weight':700,fill:css('--fg')},v));});
+  const l3=have.slice(-3);
+  if(l3.length===3){const avg=l3.reduce((a,i)=>a+val(i),0)/3,y=T+H-avg/max*H,x0=L+idx.indexOf(l3[0])*bw;
+    s.appendChild(el('line',{x1:x0,x2:W-16,y1:y,y2:y,stroke:css('--warn'),'stroke-width':2,'stroke-dasharray':'5 4'}));
+    s.appendChild(el('text',{x:x0-6,y:y+4,'text-anchor':'end','font-size':13,'font-weight':600,fill:css('--warn')},'평균 '+fmt(avg)));}
+}
+function drawBA(){
+  const s=document.getElementById('baChart');if(!s)return;s.innerHTML='';const W=900,Hh=256,L=48,T=22,H=190;s.setAttribute('viewBox',`0 0 ${W} ${Hh}`);
+  const idx=visIdx(M.length),n=idx.length,val=i=>isNum(BA[i])?BA[i]:null;
+  const nums=idx.map(val).filter(v=>v!=null);
+  const max=Math.max(50,ceilTo(Math.max(0,...nums)*1.15,50));axisY(s,W,L,T,H,max,max>300?100:50);
+  const bw=(W-L-16)/n,lf=labelFs(n),vf=n>12?13:15;
+  const have=idx.filter(i=>val(i)!=null),lastI=have[have.length-1];
+  const pts=[];
+  idx.forEach((i,j)=>{const x=L+j*bw+bw*0.22,w=bw*0.56,v=val(i),cx=x+w/2;
+    s.appendChild(el('text',{x:cx,y:T+H+22,'text-anchor':'middle','font-size':lf,fill:css('--muted')},M[i]));
+    if(v==null){s.appendChild(el('text',{x:cx,y:T+H-6,'text-anchor':'middle','font-size':12,fill:css('--muted')},'미입력'));return}
+    const h=v/max*H,y=T+H-h;
+    s.appendChild(el('rect',{x,y,width:w,height:h,rx:2,fill:i===lastI?css('--puberty'):css('--other')}));
+    s.appendChild(el('text',{x:cx,y:y-5,'text-anchor':'middle','font-size':vf,'font-weight':700,fill:css('--fg')},v));
+    const st=stAt(i);if(st!=null&&v>0)pts.push([cx,st/v]);});
+  // 전환율 선: 0~30% 를 차트 높이에 맞춤
+  if(pts.length>1){const Y=r=>T+H-Math.min(r,0.3)/0.3*H*0.9-H*0.05;
+    s.appendChild(el('path',{d:pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+','+Y(p[1]).toFixed(1)).join(' '),fill:'none',stroke:css('--gh'),'stroke-width':2.5}));
+    pts.forEach((p,i)=>{s.appendChild(el('circle',{cx:p[0],cy:Y(p[1]),r:3.5,fill:css('--gh')}));
+      if(i===pts.length-1||i===0||(n<=8))s.appendChild(el('text',{x:p[0],y:Y(p[1])-9,'text-anchor':'middle','font-size':13,'font-weight':700,fill:css('--gh')},Math.round(p[1]*100)+'%'))});}
+}
+function drawProj(){
+  const s=document.getElementById('projChart');s.innerHTML='';const W=900,Hh=278,L=44,T=26,H=206;s.setAttribute('viewBox',`0 0 ${W} ${Hh}`);
+  // 가로 위치: 0 = 2026-01 기준 개월 수. 현재(마지막 실적) 3개월 전부터 1년 뒤까지만 그림.
+  const mIdx=(k,i)=>k?(+k.slice(0,4)-2026)*12+(+k.slice(5,7))-1:i;
+  const all=REV.map((v,i)=>[mIdx(MK[i],i),v/100]).filter(q=>isNum(q[1]));
+  const last=all[all.length-1],from=last[0]-3,to=last[0]+12;
+  const actual=all.filter(q=>q[0]>=from);
+  // PLAN: 예상 월매출(억), [개월 번호(0=2026-01), 억]. 실적이 들어온 달은 자동으로 가려짐.
+  // 2026.10 2.1(휴가 3일·학회 1일), 11 2.72, 12 2.99 / 2027 기본 예측 월별(합계 49.7억)
+  const PLAN=[[9,2.1],[10,2.72],[11,2.99],[12,3.37],[13,3.59],[14,3.58],[15,3.70],[16,3.90],[17,4.04],[18,4.37],[19,4.60],[20,4.49],[21,4.57],[22,4.64],[23,4.88]];
+  const proj=[last,...PLAN.filter(q=>q[0]>last[0]&&q[0]<=to)];
+  const max=Math.max(5.0,...actual.map(q=>q[1]),...proj.map(q=>q[1]))*1.12;
+  for(let v=0;v<=max;v+=1){const y=T+H-v/max*H;s.appendChild(el('line',{x1:L,x2:W-10,y1:y,y2:y,stroke:css('--line')}));s.appendChild(el('text',{x:L-6,y:y+4,'text-anchor':'end','font-size':13,fill:css('--muted')},v?v+'억':'0'))}
+  const X=i=>L+(i-from)/(to-from)*(W-L-48),Y=v=>T+H-v/max*H;
+  const p=a=>a.map((q,i)=>(i?'L':'M')+X(q[0]).toFixed(1)+','+Y(q[1]).toFixed(1)).join(' ');
+  const gy=Y(5);s.appendChild(el('line',{x1:L,x2:W-10,y1:gy,y2:gy,stroke:css('--warn'),'stroke-width':1,'stroke-dasharray':'2 4'}));
+  s.appendChild(el('text',{x:L+6,y:gy-6,'text-anchor':'start','font-size':14,'font-weight':600,fill:css('--warn')},'목표 5억'));
+  if(proj.length>1)s.appendChild(el('path',{d:p(proj),fill:'none',stroke:css('--proj'),'stroke-width':2.5,'stroke-dasharray':'7 5'}));
+  s.appendChild(el('path',{d:p(actual),fill:'none',stroke:css('--gh'),'stroke-width':3}));
+  actual.forEach(q=>s.appendChild(el('circle',{cx:X(q[0]),cy:Y(q[1]),r:3.2,fill:css('--gh')})));
+  // 점과 금액 표시는 현재·6개월 뒤·1년 뒤 세 군데만
+  const mark=q=>{const isNow=q[0]===last[0];s.appendChild(el('circle',{cx:X(q[0]),cy:Y(q[1]),r:4.5,fill:isNow?css('--gh'):css('--surface'),stroke:isNow?css('--gh'):css('--proj'),'stroke-width':2}));
+    s.appendChild(el('text',{x:X(q[0]),y:Y(q[1])-13,'text-anchor':'middle','font-size':15,'font-weight':700,fill:css('--fg')},W0(q[1]*10000)+'만'))};
+  mark(last);proj.filter(q=>q[0]===last[0]+6||q[0]===to).forEach(mark);
+  for(let i=from;i<=to;i+=3)s.appendChild(el('text',{x:X(i),y:T+H+22,'text-anchor':'middle','font-size':14,fill:css('--muted')},(26+Math.floor(i/12))+'.'+(i%12+1)));
+}
+function analysis(){
+  const box=document.getElementById('anaBody');if(!box)return;
+  const n=M.length,L=LAST;if(n<2){box.innerHTML='<p>두 달 이상 데이터가 쌓이면 분석이 표시됩니다.</p>';return}
+  const mon=i=>MK[i]?+MK[i].slice(5,7):(i+1);
+  const money=mm=>mm>=100?fmt(mm/100,2)+'억':W0(mm*100)+'만';
+  const pct=(a,b)=>b?Math.round(a/b*100):0;
+  const sgn=v=>(v>0?'+':'')+v;
+  const oth=i=>REV[i]-GH[i]-PUB[i];
+  const act=i=>{let s=0;for(let k=0;k<=i+ST_OFFSET&&k<ST.length;k++)s+=isNum(ST[k])?ST[k]:0;return s};
+  const share=i=>`성장호르몬 ${pct(GH[i],REV[i])}% · 사춘기 지연제 ${pct(PUB[i],REV[i])}% · 그 외 ${pct(oth(i),REV[i])}%`;
+  const ml=i=>MK[i]?MK[i].slice(2,4)+'.'+(+MK[i].slice(5,7)):M[i];
+  let B=0;for(let i=0;i<=L;i++){if(REV[i]>=10){B=i;break}} // 첫 정상 영업월(매출 1천만 이상)
+  const out=[];
+  // 1. 최근 3개월 월별
+  const rows=[];
+  for(let i=L;i>=Math.max(0,L-2);i--){
+    const d=i>0?REV[i]-REV[i-1]:null,g=i>0?GH[i]-GH[i-1]:null,st=stAt(i),vs=visAt(i),pv=i>0?visAt(i-1):null;
+    let t=`<b>${M[i]}</b> 매출 ${money(REV[i])}`+(d!=null?` (전월 ${sgn(Math.round(d*100)).replace(/(\d)(?=(\d{3})+$)/g,'$1,')}만)`:'')+`, 성장호르몬 ${money(GH[i])}`+(g!=null?` (${sgn(Math.round(g*100)).replace(/(\d)(?=(\d{3})+$)/g,'$1,')}만)`:'');
+    if(typeof DAYS!=='undefined'&&isNum(DAYS[i]))t+=`, 진료일 ${DAYS[i]}일 · 하루 ${W0(REV[i]*100/DAYS[i])}만`;
+    if(st!=null)t+=`, 신규 시작 ${st}명`;
+    if(vs!=null)t+=`, 환자 ${W0(vs)}명`+(pv?` (${sgn(Math.round((vs-pv)/pv*100))}%)`:'');
+    rows.push(`<li>${t}</li>`);
+  }
+  out.push(`<h3>최근 3개월</h3><ul>${rows.join('')}</ul>`);
+  // 2. 매출 구조
+  const r0=REV[B],rL=REV[L],gr=GH[B]?GH[L]/GH[B]:0,rr=r0?rL/r0:0;
+  out.push(`<h3>매출 구조</h3><p>첫 정상 영업월 ${ml(B)} 비중은 ${share(B)}, ${ml(L)} 비중은 ${share(L)}. 총매출이 ${fmt(rr,1)}배 되는 동안 성장호르몬은 ${fmt(gr,1)}배로, 성장을 ${gr>rr?'성장호르몬이 끌었습니다':'성장호르몬보다 다른 항목이 끌었습니다'}. 그 외(진찰·검사·수액) 매출은 최근 6개월 ${(()=>{const a=[];for(let i=Math.max(0,L-5);i<=L;i++)a.push(oth(i));return money(Math.min(...a))+'~'+money(Math.max(...a))})()} 사이로, 성장호르몬만큼 늘지는 않았습니다. 환자 1명당 월 매출은 ${visAt(B)&&visAt(L)?W0(REV[B]*100/visAt(B))+'만 → '+W0(REV[L]*100/visAt(L))+'만':'계산 불가'}.</p>`);
+  // 2b. 진료일 하루당 (휴진·연휴 달 보정)
+  if(typeof DAYS!=='undefined'){const have=[];for(let i=0;i<=L;i++)if(isNum(DAYS[i]))have.push(i);
+    if(have.length>=2){const li=have[have.length-1],pi=have[have.length-2],pd=i=>REV[i]*100/DAYS[i],pv=i=>visAt(i)?visAt(i)/DAYS[i]:null;
+      let t=have.map(i=>`${M[i]} ${DAYS[i]}일·${W0(pd(i))}만`).join(', ')+'. ';
+      t+=`${M[li]}은 전월 대비 하루 매출 ${sgn(Math.round((pd(li)/pd(pi)-1)*100))}%`+(pv(li)&&pv(pi)?`, 하루 환자 ${sgn(Math.round((pv(li)/pv(pi)-1)*100))}%`:'')+'. 휴진이나 연휴가 낀 달은 월 합계가 아니라 이 숫자로 추세를 보는 게 맞습니다.';
+      out.push(`<h3>진료일 하루당</h3><p>${t}</p>`)}}
+  // 3. 성장호르몬 패턴
+  const a0=act(B),aL=act(L);
+  let gh=`활성 환자(누적 신규) ${ml(B)} ${a0}명 → ${ml(L)} ${aL}명, 1명당 월 매출 ${a0?W0(GH[B]*100/a0):'-'}만 → ${aL?W0(GH[L]*100/aL):'-'}만. `;
+  gh+=Math.abs(GH[L]*100/aL-GH[B]*100/a0)<15?'단가는 거의 그대로이고 환자 수가 쌓인 것이 성장의 전부입니다. ':'단가 변화도 함께 있었습니다. ';
+  if(n>=6){const od=[],ev=[];for(let i=Math.max(1,L-5);i<=L;i++){(mon(i)%2?od:ev).push(GH[i]-GH[i-1])}
+    const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0,ao=avg(od),ae=avg(ev);
+    if(ao>0&&ae>0&&(ao>ae*2||ae>ao*2)){const big=ao>ae?'홀수':'짝수',small=ao>ae?'짝수':'홀수',nextOdd=(mon(L)+1)%2===1;
+      gh+=`최근 6개월은 <b>${big} 달에 크게 뛰고 ${small} 달은 평평</b>한 2개월 주기가 보입니다(${big} 달 평균 ${sgn(Math.round(Math.max(ao,ae)*100)).replace(/(\d)(?=(\d{3})+$)/g,'$1,')}만, ${small} 달 ${sgn(Math.round(Math.min(ao,ae)*100)).replace(/(\d)(?=(\d{3})+$)/g,'$1,')}만). 2개월 처방 환자가 ${big} 달에 몰려 있다는 뜻이라 다음 달(${mon(L)%12+1}월)은 ${(nextOdd?'홀수':'짝수')===big?'뛰는 달':'평평해도 정상인 달'}이고, 추세는 두 달 평균으로 보는 게 맞습니다.`}}
+  out.push(`<h3>성장호르몬</h3><p>${gh}</p>`);
+  // 3b. 초진·전환율 (BA = 골연령 촬영 건수)
+  if(typeof BA!=='undefined'&&BA.length){const ba=i=>isNum(BA[i])?BA[i]:null;
+    let sb=0,ss=0;for(let i=B;i<=L;i++){if(ba(i)&&stAt(i)!=null){sb+=ba(i);ss+=stAt(i)}}
+    let lb=0,ls=0;for(let i=Math.max(B,L-2);i<=L;i++){if(ba(i)&&stAt(i)!=null){lb+=ba(i);ls+=stAt(i)}}
+    const cur=ba(L),prev=ba(L-1);
+    let t=`${M[L]} 초진 ${cur!=null?W0(cur):'-'}건`+(cur!=null&&prev?` (전월 ${sgn(Math.round((cur-prev)/prev*100))}%)`:'')+`. `;
+    if(cur&&stAt(L)!=null)t+=`같은 달 전환율 ${Math.round(stAt(L)/cur*100)}%`;
+    if(prev&&stAt(L)!=null)t+=`, 전월 초진 대비(한 달 지연) ${Math.round(stAt(L)/prev*100)}%`;
+    t+=`. 최근 3개월 전환율 ${lb?Math.round(ls/lb*100):'-'}%, ${ml(B)} 이후 누적 ${sb?Math.round(ss/sb*100):'-'}%. 초진은 방학 달에 몰리고 시작은 한 달 뒤에 오므로 지연 전환율이 실제에 가깝습니다. 초진 수는 6개월 F/U 골연령 촬영을 일부 포함합니다.`;
+    out.push(`<h3>초진과 전환율</h3><p>${t}</p>`)}
+  // 4. 사춘기 지연제
+  let pub=`${ml(B)} ${money(PUB[B])} → ${ml(L)} ${money(PUB[L])}(${fmt(PUB[B]?PUB[L]/PUB[B]:0,1)}배), 비중 ${pct(PUB[B],REV[B])}% → ${pct(PUB[L],REV[L])}%. `;
+  const pd=[];for(let i=B+1;i<=L;i++)pd.push(PUB[i]-PUB[i-1]);
+  pub+=pd.every(v=>v>=0)?'한 달도 줄지 않고 매달 늘어 방학과 무관하게 환자가 쌓이는 구조입니다. ':'달에 따라 오르내림이 있습니다. ';
+  pub+='이익은 사실상 루프원뿐이라 매출 성장에 비해 손익 기여는 작습니다.';
+  out.push(`<h3>사춘기 지연제</h3><p>${pub}</p>`);
+  // 5. 방학 시즌
+  const idx=m=>{const a=[];for(let i=0;i<n;i++)if(m.includes(mon(i)))a.push(i);return a};
+  const avgOf=(a,f)=>{const v=a.map(f).filter(isNum);return v.length?v.reduce((x,y)=>x+y,0)/v.length:null};
+  const seas=[];
+  const yr=i=>MK[i]?+MK[i].slice(0,4):0;
+  const idxY=(m,y)=>idx(m).filter(i=>yr(i)===y);
+  const suAll=idx([7,8]),sy=suAll.length?yr(suAll[suAll.length-1]):0; // 가장 최근 여름만 비교
+  const su=idxY([7,8],sy),pre=idxY([5,6],sy),post=idxY([9],sy);
+  if(su.length){const v1=avgOf(su,visAt),v0=avgOf(pre,visAt),o1=avgOf(su,oth),o0=avgOf(pre,oth),s1=avgOf(su,stAt),s0=avgOf(pre,stAt),s2=avgOf(post,stAt);
+    let t=`<b>${sy} 여름방학(7~8월)</b>: `;
+    if(v1&&v0)t+=`환자 ${W0(v1)}명/월로 5~6월 대비 ${sgn(Math.round((v1-v0)/v0*100))}%, `;
+    if(o1&&o0)t+=`검사·진찰 매출 ${money(o0)} → ${money(o1)}. `;
+    if(s1!=null&&s0!=null)t+=`신규 시작은 월 ${fmt(s1,0)}명으로 5~6월(${fmt(s0,0)}명)과 ${Math.abs(s1-s0)<4?'비슷':s1>s0?'많음':'적음'}`;
+    if(s2!=null)t+=`, 9월 ${fmt(s2,0)}명${s1!=null&&s2>s1?' — 방학에 초진·검사, 개학 후 시작하는 1~2개월 지연이 보입니다':''}.`;else t+='.';
+    seas.push(`<li>${t}</li>`)}
+  const wAll=idx([1,2]),wy=wAll.length?yr(wAll[wAll.length-1]):0; // 가장 최근 겨울(전년 12월 + 1~2월)
+  const wi=idxY([12],wy-1).concat(idxY([1,2],wy)),wpost=idxY([3,4],wy);
+  if(wi.length>=2){const s1=avgOf(wi,stAt),s2=avgOf(wpost,stAt),v1=avgOf(wi,visAt);
+    let t=`<b>${wy-1}~${wy} 겨울방학(12~2월)</b>: 신규 시작 월 ${s1!=null?fmt(s1,0):'-'}명`+(v1?`, 환자 ${W0(v1)}명/월`:'');
+    if(s2!=null)t+=`, 직후 3~4월 ${fmt(s2,0)}명`;
+    t+='. 여름과 같은 지연 패턴이면 겨울방학 성과는 12월이 아니라 2~3월 신규 수로 판단하는 게 맞습니다.';
+    seas.push(`<li>${t}</li>`)}
+  if(seas.length)out.push(`<h3>방학 시즌</h3><ul>${seas.join('')}</ul>`);
+  // 6. 약제
+  if(DRUG.length){const tot=DRUG.reduce((a,d)=>a+d[1],0),sorted=[...DRUG].sort((a,b)=>b[1]-a[1]);
+    const known=DRUG.filter(d=>d[2]!=null),wm=known.reduce((a,d)=>a+d[1]*d[2],0)/known.reduce((a,d)=>a+d[1],0);
+    out.push(`<h3>${M[L]} 약제 비중</h3><p>${sorted.map(d=>`${d[0].replace(/\s*\(.*\)/,'')} ${pct(d[1],tot)}%`).join(' · ')}. 가중 이익률 약 ${Math.round(wm*100)}%. 약제별 추이는 이전 달 처방별 통계가 들어오면 비교됩니다.</p>`)}
+  box.innerHTML=out.join('');
+}
+function tables(){
+  const lm=M[LAST];document.getElementById('drugH').textContent=`${lm} 성장호르몬 약제별 매출과 이익`;
+  const unk=DRUG.filter(d=>d[2]==null).map(d=>d[0]);
+  document.getElementById('drugNote').textContent='이익률은 원장님이 알려주신 약제별 값'+(unk.length?' · 미정: '+unk.join(', '):'');
+  const t=document.getElementById('drugTbl');
+  if(!DRUG.length){t.innerHTML='<tbody><tr><td>약제 데이터 미입력</td></tr></tbody>';return}
+  let tot=0,tp=0;const mx=Math.max(...DRUG.map(d=>d[1]));
+  let h=`<thead><tr><th>약제</th><th>${lm} 매출 (만원)</th><th class="x">비중</th><th>이익률</th><th class="x">추정 이익 (만원)</th><th class="x">처방 횟수</th></tr></thead><tbody>`;
+  const sum=DRUG.reduce((a,d)=>a+d[1],0);
+  const known=DRUG.filter(d=>d[2]!=null).reduce((a,d)=>a+d[1],0); // 이익률 미정 약제는 이익률 계산에서 뺌
+  for(const [n,v,m,c] of DRUG){const pr=m==null?null:v*m;tot+=v;if(pr)tp+=pr;
+    const cls=m==null?'':(m>=0.45?'hi':(m<0.3?'lo':''));
+    h+=`<tr><td class="nm">${n.replace(/\s*(\(.+\))$/,' <small>$1</small>')}</td><td>${W0(v*100)}<span class="bar x" style="width:${mx>0?Math.round(v/mx*80):0}px"></span></td><td class="x">${sum>0?Math.round(v/sum*100):0}%</td><td><span class="pill ${cls}">${m==null?'미정':Math.round(m*1000)/10+'%'}</span></td><td class="x">${pr==null?'–':W0(pr*100)}</td><td class="x">${c??'–'}</td></tr>`}
+  h+=`</tbody><tfoot><tr><td>합계</td><td>${W0(tot*100)}</td><td class="x">100%</td><td>${known>0?fmt(tp/known*100)+'%':'–'}</td><td class="x">${W0(tp*100)}</td><td class="x">${DRUG.reduce((a,d)=>a+(isNum(d[3])?d[3]:0),0)}</td></tr></tfoot>`;
+  t.innerHTML=h;
+}
+function workDays(i){const [y,mo]=MK[i].split('-').map(Number);let n=0;for(let d=new Date(y,mo-1,1);d.getMonth()===mo-1;d.setDate(d.getDate()+1)){const w=d.getDay();if(w>=2&&w<=6)n++}return n}
+function todo(i){const items=[];
+  if(i===LAST){
+    if(stAt(i)==null)items.push([`${M[i]} 성장호르몬 신규 시작 수(ST) 입력하기`,'']);
+    const sum=DRUG.reduce((a,d)=>a+d[1],0),u=DRUG.find(d=>d[0].startsWith('유트로핀')),us=u&&sum>0?Math.round(u[1]/sum*100):0;
+    if(us>40)items.push([`유트로핀 → 그로트로핀·에코펜 상담 비중 높이기(현재 유트로핀 ${us}%)`,'']);
+  } else return '';
+  if(!items.length)return '';
+  return `<div class="todo"><b>이번 달 할 일</b><ul>${items.map(([t,c])=>`<li${c?` class="${c}"`:''}>${t}</li>`).join('')}</ul></div>`}
+function note(i){const m=model(i),g=Math.round(m.G/m.R*100),st=stAt(i),prev=i?stAt(i-1):null;const parts=[];
+  parts.push(`${M[i]} 매출의 ${g}%가 성장호르몬`+(i?`(전월 ${Math.round(GH[i-1]/REV[i-1]*100)}%)`:'')+'.');
+  parts.push(st==null?'신규 시작 수는 아직 미입력.':`신규 시작 ${st}명`+(prev!=null?(st>=prev?`, 전월보다 ${st-prev}명 많음`:`, 전월보다 ${prev-st}명 적음`):'')+'.');
+  parts.push(m.net<0?'비용이 매출을 넘어 적자.':`순이익률 ${Math.round(m.net/m.R*100)}%.`);
+  if(PREP(i))return '개원 준비 달(9월 30일 하루 진료)이라 매출·순이익은 비교하지 않습니다.';
+  return parts.join(' ')}
+function showMonth(i){
+  document.querySelectorAll('#chips .chip').forEach(c=>c.setAttribute('aria-pressed',+c.dataset.i===i));
+  const m=model(i),st=stAt(i),vis=visAt(i),prev=i?REV[i-1]:null;
+  const ba=(typeof BA!=='undefined'&&isNum(BA[i]))?BA[i]:null,pba=(i&&typeof BA!=='undefined'&&isNum(BA[i-1]))?BA[i-1]:null;
+  const dayKnown=typeof DAYS!=='undefined'&&isNum(DAYS[i]),days=dayKnown?DAYS[i]:workDays(i);
+  const ch=(prev&&!PREP(i-1)&&!PREP(i))?((REV[i]/prev-1)*100):null;
+  const pay=m.grp('pay'),rent=m.grp('rent'),etc=m.grp('etc'),sm=a=>a.reduce((s,x)=>s+x[1],0);
+  const tag=x=>sinceTag(m.fp,x),gtag=a=>a.map(tag).find(Boolean)||'';
+  const sub=(g,a)=>a.map(x=>`<tr class="sub g-${g}" hidden><td>${x[0]}${x[3]?` <em>${x[3]}</em>`:''}${tag(x)}</td><td>${W0(x[1])}</td></tr>`).join('');
+  let h=`<div class="mk">
+   <div><span class="k">${ymLabel(MK[i])||M[i]} 매출</span>${PREP(i)?'<span class="v na">개원 준비</span><span class="d flat">9월 30일 하루 진료</span>':`<span class="v">${W0(REV[i]*100)}<small>만원</small></span><span class="d ${ch>=0?'up':'dn'}">${ch==null?(i&&PREP(i-1)?'개원 첫 달':'첫 달'):'전월 대비 '+(ch>=0?'+':'')+fmt(ch)+'%'}</span>`}</div>
+   <div><span class="k">추정 순이익 (세전)</span>${PREP(i)?'<span class="v na">개원 준비</span><span class="d flat">비교에서 제외</span>':`<span class="v">${m.net<0?'적자':W0(m.net)}<small>${m.net<0?W0(-m.net)+'만원':'만원'}</small></span><span class="d flat">매출의 ${m.net<0?'−':''}${Math.round(Math.abs(m.net)/m.R*100)}%</span>`}</div>
+   <div><span class="k">내원</span>${vis==null?'<span class="v na">미입력</span><span class="d flat">내원 수를 아직 안 넣음</span>':`<span class="v">${vis}<small>명</small></span><span class="d flat">하루 약 ${Math.round(vis/days)}명 (진료 ${days}일${dayKnown?'':' 추정'})</span>`}</div>
+   <div><span class="k">성장호르몬 신규 시작</span>${st==null?'<span class="v na">미입력</span>':`<span class="v">${st}<small>명</small></span>`}<span class="d flat">성장호르몬 매출 ${W0(GH[i]*100)}만</span></div>
+   <div><span class="k">초진 (골연령 촬영)</span>${ba==null?'<span class="v na">미입력</span>':`<span class="v">${ba}<small>건</small></span><span class="d flat">${st!=null&&ba>0?'성장호르몬 전환율 '+Math.round(st/ba*100)+'%':'전환율 계산 불가'}${pba&&st!=null?' · 전월 초진 대비 '+Math.round(st/pba*100)+'%':''}</span>`}</div>
+   <div><span class="k">객단가 (환자 1명당)</span>${vis?`<span class="v">${W0(REV[i]*100/vis)}<small>만원</small></span><span class="d flat">하루 매출 ${W0(REV[i]*100/days)}만${dayKnown?'':' (진료일 추정)'}</span>`:'<span class="v na">미입력</span>'}</div>
+  </div>
+  <div><div class="mix"><i style="width:${m.G/m.R*100}%;background:var(--gh)"></i><i style="width:${m.P/m.R*100}%;background:var(--puberty)"></i><i style="width:${m.O/m.R*100}%;background:var(--other)"></i></div>
+   <div class="legend"><span><i class="sw" style="background:var(--gh)"></i>성장호르몬 ${Math.round(m.G/m.R*100)}%</span><span><i class="sw" style="background:var(--puberty)"></i>사춘기 지연제 ${Math.round(m.P/m.R*100)}%</span><span><i class="sw" style="background:var(--other)"></i>그 외 ${Math.round(m.O/m.R*100)}%</span></div></div>
+  <div class="tbl"><table id="costTbl"><thead><tr><th>항목</th><th>만원</th></tr></thead><tbody>
+   <tr><td>매출</td><td>${PREP(i)?'개원 준비':W0(m.R)}</td></tr>
+   <tr class="grp" data-g="v"><td>− 약값·재료·수수료 <span class="tg">▾</span></td><td>${W0(m.vs)}</td></tr>
+   ${m.v.map(x=>`<tr class="sub g-v" hidden><td>${x[0]}</td><td>${W0(x[1])}</td></tr>`).join('')}
+   <tr class="grp" data-g="p"><td>− 인건비${gtag(pay)} <span class="tg">▾</span></td><td>${W0(sm(pay))}</td></tr>
+   ${sub('p',pay)}
+   <tr><td>− 임대료 (관리비 포함)${gtag(rent)}</td><td>${W0(sm(rent))}</td></tr>
+   <tr class="grp" data-g="o"><td>− 그 외 고정비${gtag(etc)} <span class="tg">▾</span></td><td>${W0(sm(etc))}</td></tr>
+   ${sub('o',etc)}
+   ${PREP(i)?'':`<tr><td>− 기타·미분류 (순이익식과 차이)</td><td>${m.adj<0?'−'+W0(-m.adj):W0(m.adj)}</td></tr>`}
+   <tr class="sum"><td>비용 합계</td><td>${W0(m.vs+m.fs+(PREP(i)?0:m.adj))}</td></tr>
+   <tr class="res"><td>추정 순이익 (식 기준)</td><td>${PREP(i)?'개원 준비':(m.net<0?'−'+W0(-m.net):W0(m.net))}</td></tr></tbody></table></div>
+  <div class="note" id="mnote">${note(i)}</div>
+  ${todo(i)}`;
+  document.getElementById('mcard').innerHTML=h;
+}
+document.getElementById('upd').innerHTML='최근 반영<br>'+LATEST_LABEL;
+(function(){const c=document.getElementById('chips');
+  M.map((m,i)=>[m,i]).reverse().forEach(([m,i])=>{const b=document.createElement('button');b.className='chip';b.dataset.i=i;b.textContent=m;b.onclick=()=>showMonth(i);c.appendChild(b)});
+  const hm=/^m(1[0-2]|[1-9])$/.exec((location.hash||'').slice(1));let i=hm?Math.min(+hm[1],M.length)-1:M.length-1;showMonth(i);
+  if(hm)setTimeout(()=>document.getElementById('monthly').scrollIntoView(),50);
+  document.addEventListener('click',e=>{const a=e.target.closest('a[data-m]');if(a){e.preventDefault();showMonth(+a.dataset.m);document.getElementById('monthly').scrollIntoView({behavior:'smooth'})}});
+})();
+function all(){drawRev();drawStarts();drawBA();drawProj();}
+document.addEventListener('click',e=>{
+  const g=e.target.closest('tr.grp');if(g){const k=g.dataset.g,rows=document.querySelectorAll('.g-'+k);const open=rows[0]&&!rows[0].hidden;rows.forEach(r=>r.hidden=open);g.querySelector('.tg').textContent=open?'▾':'▴';return}
+  const sv=e.target.closest('svg.zoom');if(sv&&!e.target.closest('#lb')){const lb=document.createElement('div');lb.id='lb';const title=sv.closest('.sec').querySelector('h2').textContent;
+    lb.innerHTML=`<div class="lbh"><span>${title}</span><button type="button">닫기 ✕</button></div><div class="lbc"></div><div class="hint">화면 아무 곳이나 누르거나 뒤로가기로 닫힘</div>`;const c=sv.cloneNode(true);c.classList.remove('zoom');lb.querySelector('.lbc').appendChild(c);
+    const close=()=>{if(document.getElementById('lb')){lb.remove();if(history.state&&history.state.lb)history.back()}};lb.querySelector('button').onclick=close;lb.onclick=ev=>{if(!ev.target.closest('svg'))close()};history.pushState({lb:1},'');document.body.appendChild(lb);return}
+});
+tables();analysis();all();
+(function(){const f=document.querySelectorAll('details.fold');const set=()=>f.forEach(d=>d.open=!PHONE.matches);set();PHONE.addEventListener('change',set)})();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',all);
+PHONE.addEventListener('change',all);
+(function(){const c=document.getElementById('mcard');let x0=null,y0=null;c.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});c.addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)<60||Math.abs(dy)>Math.abs(dx))return;const cur=+document.querySelector('#chips .chip[aria-pressed="true"]').dataset.i;const n=dx<0?cur-1:cur+1;if(n>=0&&n<M.length){showMonth(n);const ch=document.querySelector('#chips .chip[data-i="'+n+'"]');ch&&ch.scrollIntoView({inline:'center',block:'nearest'})}},{passive:true})})();
+window.addEventListener('popstate',()=>{const lb=document.getElementById('lb');if(lb)lb.remove()});
+new MutationObserver(all).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+</script>
+
+</body></html>

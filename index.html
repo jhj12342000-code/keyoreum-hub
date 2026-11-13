@@ -327,7 +327,7 @@ button.item:active,a.item:active,#v-reagent .grp>summary:active{transform:scale(
         <button class="app misc" data-view="later"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/></svg></span><span class="lbl">그 외</span></button>
       </div>
     </section>
-    <p class="foot">마지막 수정 2026.11.10 · v39</p>
+    <p class="foot">마지막 수정 2026.11.13 · v41</p>
   </div></main>
 </div>
 
@@ -557,10 +557,11 @@ peak LH 9.95 (45분)
   function valid(n){return /^[a-z]+$/.test(n||'')&&!!document.getElementById('v-'+n)}
   var VT=!!document.startViewTransition&&!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches),booted=false;
   if(!VT) document.documentElement.classList.add('no-vt');
+  function tint(t){try{var m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement('meta');m.name='theme-color';document.head.appendChild(m)}var el=t.querySelector('.hero2')||t.querySelector('.hero')||document.body;m.content=getComputedStyle(el).backgroundColor}catch(err){}}
   function open(name){
     if(!valid(name)) name='home';
     var target=document.getElementById('v-'+name);
-    function swap(){views.forEach(function(v){v.hidden=(v!==target)});window.scrollTo(0,0)}
+    function swap(){views.forEach(function(v){v.hidden=(v!==target)});window.scrollTo(0,0);tint(target)}
     cur=name;
     if(VT&&booted){try{document.startViewTransition(swap);return}catch(err){}}
     swap();
@@ -595,6 +596,7 @@ peak LH 9.95 (45분)
   var h=(location.hash||'').slice(1);
   if(valid(h)&&h!=='home'){open(h);replace({view:h,d:0},'#'+h)}else{replace({view:'home',d:0})}
   booted=true;
+  tint(document.querySelector('.view:not([hidden])')||document.body);
   try{var n=new Date();document.getElementById('today').textContent=(n.getMonth()+1)+'.'+String(n.getDate()).padStart(2,'0')}catch(err){}
   try{
     var today=new Date(new Date().toDateString());
@@ -712,6 +714,8 @@ peak LH 9.95 (45분)
   function onShow(){if(!root.hidden){load(seen);seen=true}}
   new MutationObserver(onShow).observe(root,{attributes:true,attributeFilter:['hidden']});
   onShow();
+  function stale(){if(!root.hidden&&document.visibilityState==='visible'&&lastTs&&Date.now()-lastTs>3e5)load(true)}
+  document.addEventListener('visibilitychange',stale);window.addEventListener('pageshow',stale);
 })();
 </script>
 
@@ -731,7 +735,7 @@ peak LH 9.95 (45분)
   function toData(csv){
     var r=parseCSV(csv),audit='',g='',items=[];
     (r[0]||[]).forEach(function(c,i){if(String(c).indexOf('실사일')>-1){audit=cell(r[0],i+1)}});
-    var hi=-1;for(var i=0;i<Math.min(r.length,8);i++){if(r[i].some(function(c){return String(c).indexOf('시약')>-1&&String(c).indexOf('명')>-1})){hi=i;break}}
+    var hi=-1;for(var i=0;i<Math.min(r.length,8);i++){if(cell(r[i],0)==='구분'){hi=i;break}}
     if(hi<0)hi=2;
     r.slice(hi+1).forEach(function(x){
       if(cell(x,0))g=cell(x,0).replace(/\s*\n\s*/g,' ');
@@ -794,6 +798,8 @@ peak LH 9.95 (45분)
   function onShow(){if(!root.hidden){load(seen);seen=true}}
   new MutationObserver(onShow).observe(root,{attributes:true,attributeFilter:['hidden']});
   onShow();
+  function stale(){if(!root.hidden&&document.visibilityState==='visible'&&lastTs&&Date.now()-lastTs>3e5)load(true)}
+  document.addEventListener('visibilitychange',stale);window.addEventListener('pageshow',stale);
 })();
 </script>
 
@@ -828,6 +834,8 @@ peak LH 9.95 (45분)
   var seen=false;function onShow(){if(!root.hidden){load(seen);seen=true}}
   new MutationObserver(onShow).observe(root,{attributes:true,attributeFilter:['hidden']});
   onShow();
+  function stale(){if(!root.hidden&&document.visibilityState==='visible'&&lastTs&&Date.now()-lastTs>3e5)load(true)}
+  document.addEventListener('visibilitychange',stale);window.addEventListener('pageshow',stale);
 })();
 </script>
 </body></html>

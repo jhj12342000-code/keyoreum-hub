@@ -656,7 +656,7 @@ function drawSim(){
    (dec26?`<div class="kpi"><span class="k">26년 12월 매출</span><span class="v">${money(dec26.R)}</span><span class="d flat">원장님 예상 3억</span></div>`:'')+
    `<div class="kpi"><span class="k">2027년 총매출</span><span class="v">${fmt(tR/100,1)}<small>억</small></span><span class="d flat">월평균 ${fmt(tR/1200,2)}억</span></div>`+
    `<div class="kpi"><span class="k">2027년 순이익 (세전)</span><span class="v">${fmt(tN/10000,1)}<small>억</small></span><span class="d flat">월평균 ${fmt(tN/120000,2)}억</span></div>`+
-   `<div class="kpi"><span class="k">투자금 ${SIMBASE.invest}억 회수</span><span class="v">${hit?ym(hit):'2028년 이후'}</span><span class="d flat">개원 5억 + 확장 3억</span></div>`+
+   `<div class="kpi"><span class="k">투자금 ${SIMBASE.invest}억 회수</span><span class="v">${hit?'약 '+(r.indexOf(hit)+1)+'개월 뒤':'2028년 이후'}</span><span class="d flat">개원 5억 + 확장 3억</span></div>`+
    `<div class="kpi"><span class="k">월매출 5억 도달</span><span class="v">${goal?ym(goal):'2027년 안 미도달'}</span><span class="d flat">${goal?'':'27년 12월 '+fmt(r[r.length-1].R/100,2)+'억'}</span></div>`;
   // 차트: 최근 실적 6개월 + 시뮬레이션
   const s=box;s.innerHTML='';const W=900,Hh=300,Lf=50,T=28,H=220;s.setAttribute('viewBox',`0 0 ${W} ${Hh}`);

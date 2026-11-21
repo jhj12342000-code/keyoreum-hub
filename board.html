@@ -727,7 +727,7 @@ function drawPayback(){
   const ymk=k=>`${k.slice(2,4)}년 ${+k.slice(5,7)}월`;
   let eta='–',etaD='';
   if(rest<=0){eta='회수 완료'}
-  else if(avg>0){const mo=Math.ceil(rest/avg),t=(+MK[LAST].slice(0,4))*12+(+MK[LAST].slice(5,7))-1+mo;eta=`${String(Math.floor(t/12)).slice(2)}년 ${t%12+1}월`;etaD=`약 ${mo}개월 뒤`}
+  else if(avg>0){const mo=Math.ceil(rest/avg),t=(+MK[LAST].slice(0,4))*12+(+MK[LAST].slice(5,7))-1+mo;eta=`약 ${mo}개월 뒤`;etaD=`최근 ${c}개월 속도 기준`}
   else{etaD='최근 순이익이 0 이하'}
   const eok=v=>(v<0?'−':'')+fmt(Math.abs(v)/10000,2);
   box.innerHTML=`<div class="gz">

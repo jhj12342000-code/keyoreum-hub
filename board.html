@@ -50,12 +50,14 @@ const FIXP=[ // bep = 그 기간 손익분기 매출(만원). 순이익 = (매�
   ['직원 인건비 (6명 · 간호사 4·방사선사·행정실장 · 세후 300씩, 4대보험·퇴직금 포함 1인 약 420)',2520,'pay','추정'],['인센티브',160,'pay'],
   ['마케팅',600,'etc'],['대출 상환',200,'etc'],['소모품·운영비 (세무·보험·전기 등)',400,'etc','추정'],
   ['뷰노 골연령 판독',250,'etc'],['차트·소방·캡스 등 고정비',200,'etc']]},
- {from:'2026-11',bep:12000,items:[ // 옆호실 확장(임대료 +1,000) · 임상병리사 합류, 7명 유지
-  ['임대료 (관리비 포함)',2000,'rent'],
+ {from:'2026-11',bep:12000,items:[ // 옆호실 확장(임대료 +200) · 임상병리사 +300 — PA 도입·원내 검사 전환으로 만회되어 손익분기 1.2억 유지
+  ['임대료 (관리비 포함)',1200,'rent'],
   ['직원 인건비 (7명 · 간호사 4·방사선사·임상병리사·행정실장 · 세후 300씩, 4대보험·퇴직금 포함 1인 약 420)',2940,'pay','추정'],['인센티브',160,'pay'],
   ['마케팅',600,'etc'],['대출 상환',200,'etc'],['소모품·운영비 (세무·보험·전기 등)',400,'etc','추정'],
   ['뷰노 골연령 판독',250,'etc'],['차트·소방·캡스 등 고정비',200,'etc']]}
 ];
+// 2027 시뮬레이션 기준값: 마지막 실적 달 말 활성 성장호르몬 환자 수, 그달 수액 하루 환자, 누적 투자금(억: 개원 5 + 확장 3)
+const SIMBASE={active:220,ivNow:2,invest:8};
 // LATEST_LABEL('2026년 9월')은 MK 마지막 값에서 자동으로 만들어집니다.
 // ===== 갱신 블록 끝 — 아래는 건드리지 않는 코드 =====
 </script>
@@ -120,6 +122,15 @@ h2{font-family:var(--display);font-size:1.12rem;font-weight:700;margin:0;text-wr
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted);padding:6px 4px 0}
 .sw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:6px;vertical-align:-1px}
 .tbl{overflow-x:auto}
+.gz{display:grid;gap:12px}
+.gz-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.gz-v{font-family:var(--display);font-size:1.9rem;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums}
+.gz-v small{font-size:.9rem;font-weight:500;color:var(--muted);margin-left:2px}
+.gz-t{color:var(--muted);font-size:.95rem;font-variant-numeric:tabular-nums}
+.gz-bar{height:18px;border-radius:9px;background:var(--line);overflow:hidden}
+.gz-bar i{display:block;height:100%;background:var(--gh);border-radius:9px;min-width:4px}
+.dash{display:inline-block;width:16px;height:0;border-top:2px dashed var(--warn);margin-right:6px;vertical-align:4px}
+.dash.m{border-top-color:var(--muted)}
 table{width:100%;border-collapse:collapse;font-size:.88rem}
 @media (max-width:640px){#drugTbl .x{display:none}#drugTbl{font-size:.8rem}#drugTbl th,#drugTbl td{padding:6px}#drugTbl th{white-space:normal}#drugTbl .nm small{display:block;font-size:.72rem;color:var(--muted);white-space:normal}}
 a{color:var(--accent)}
@@ -191,6 +202,17 @@ details.how .note{max-width:70ch;margin-top:6px}
 .ana p,.ana li{margin:0;font-size:.9rem;line-height:1.65}
 .ana ul{margin:0;padding-left:1.1em;display:grid;gap:4px}
 .ana b{font-weight:700}
+.sim{display:grid;gap:14px}
+.sim .ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:4px 22px}
+.sim label{display:grid;grid-template-columns:1fr auto;align-items:center;gap:0 8px;font-size:.86rem}
+.sim label b{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent)}
+.sim input[type=range]{grid-column:1/-1;width:100%;min-height:36px;accent-color:var(--accent);margin:0}
+.sim .chips{flex-wrap:wrap}
+#simTbl td,#simTbl th{padding:6px 8px}
+#simTbl tr.y27 td:first-child{font-weight:600}
+#simTbl tr.hit td{color:var(--good);font-weight:700}
+#simTbl tfoot td{border-top:2px solid var(--line)}
+@media (max-width:640px){#simTbl .x{display:none}#simKpi{grid-template-columns:1fr 1fr}#simKpi .v{font-size:1.25rem}}
 </style>
 
 <header class="top"><div class="in">
@@ -213,6 +235,11 @@ details.how .note{max-width:70ch;margin-top:6px}
   </section>
 
   <section class="sec">
+    <div class="sec-head"><h2>투자 회수</h2><span class="note">누적 추정 순이익(세전) ÷ 투자금 · 개원 5억 + 확장 3억</span></div>
+    <div class="panel" id="payBody"></div>
+  </section>
+
+  <section class="sec">
     <div class="sec-head"><h2>성장호르몬 신규 시작</h2><span class="note">성장호르몬 리스트의 본원 시작일 기준</span></div>
     <div class="panel"><svg class="chart zoom" id="startChart" role="img" aria-label="월별 성장호르몬 신규 시작 환자 수"></svg>
       <div class="legend"><span><i class="sw" style="background:var(--gh)"></i>월 신규 시작</span><span><i class="sw" style="background:var(--warn);height:3px;vertical-align:3px"></i>최근 3개월 평균</span></div>
@@ -223,6 +250,22 @@ details.how .note{max-width:70ch;margin-top:6px}
     <div class="sec-head"><h2>초진 수와 성장호르몬 전환율</h2><span class="note">초진 = 골연령 X-ray 촬영 건수(재진은 안 찍음) · 전환율 = 신규 시작 ÷ 초진</span></div>
     <div class="panel"><svg class="chart zoom" id="baChart" role="img" aria-label="월별 초진 수와 성장호르몬 전환율"></svg>
       <div class="legend"><span><i class="sw" style="background:var(--other)"></i>초진(골연령 촬영)</span><span><i class="ln"></i>전환율(선)</span></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>하루 초진 부하</h2><span class="note">초진(골연령 촬영) ÷ 진료일 · 월 평균이라 몰리는 날은 더 많음</span></div>
+    <div class="panel"><svg class="chart zoom" id="loadChart" role="img" aria-label="월별 진료일 하루당 초진 수"></svg>
+      <div class="legend"><span><i class="sw" style="background:var(--warn)"></i>10명 초과</span><span><i class="sw" style="background:var(--gh-soft)"></i>10명 이하</span><span><i class="dash"></i>한계 10명</span><span><i class="dash m"></i>PA 도입 시 15명</span></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>신규 1명당 마케팅비</h2><span class="note">월 마케팅비 ÷ 성장호르몬 신규 시작 · 단위 만원</span></div>
+    <div class="panel">
+      <div class="kpis" id="mktKpi" style="margin-bottom:10px"></div>
+      <svg class="chart zoom" id="mktChart" role="img" aria-label="월별 성장호르몬 신규 시작 1명당 마케팅비"></svg>
+      <div class="legend"><span><i class="sw" style="background:var(--gh)"></i>최근 달</span><span><i class="sw" style="background:var(--gh-soft)"></i>시작 1명당 마케팅비</span></div>
     </div>
   </section>
 
@@ -238,6 +281,32 @@ details.how .note{max-width:70ch;margin-top:6px}
     </div>
   </details>
 
+  <details class="sec fold" id="foldSim">
+    <summary class="sec-head"><h2>2027 시뮬레이션</h2><span class="note">조건을 바꾸면 바로 다시 계산 · 세전 추정</span></summary>
+    <div class="panel sim">
+      <div class="chips" role="group" aria-label="시나리오">
+        <button class="chip" type="button" data-p="low" aria-pressed="true">보수</button>
+        <button class="chip" type="button" data-p="base">기본</button>
+        <button class="chip" type="button" data-p="high">낙관</button>
+      </div>
+      <div class="ctl">
+        <label>성장호르몬 신규 시작 (월, 평소) <b id="o_start"></b><input type="range" id="s_start" min="15" max="40" step="1"></label>
+        <label>방학(12~2월·7~8월) 시작 증가 <b id="o_season"></b><input type="range" id="s_season" min="0" max="60" step="5"></label>
+        <label>PA 도입 효과 (2027~, 시작 환자) <b id="o_pa"></b><input type="range" id="s_pa" min="0" max="40" step="5"></label>
+        <label>성장호르몬 중단 (이사 등, 월) <b id="o_drop"></b><input type="range" id="s_drop" min="0" max="10" step="0.5"></label>
+        <label>수액 하루 환자 (광고 7개월 뒤) <b id="o_iv"></b><input type="range" id="s_iv" min="0" max="20" step="1"></label>
+        <label>손익분기 매출 <b id="o_bep"></b><input type="range" id="s_bep" min="10000" max="16000" step="500"></label>
+      </div>
+      <div class="kpis" id="simKpi"></div>
+      <svg class="chart zoom" id="simChart" role="img" aria-label="실제 월매출과 2027년까지의 시뮬레이션 매출·순이익"></svg>
+      <div class="legend"><span><i class="sw" style="background:var(--gh)"></i>실제 매출</span><span><i class="sw" style="background:var(--proj)"></i>시뮬레이션 매출</span><span><i class="ln"></i>추정 순이익</span></div>
+      <div class="tbl"><table id="simTbl"></table></div>
+      <details class="how"><summary>ⓘ 시뮬레이션 계산 방법</summary>
+        <div class="note">성장호르몬: 활성 환자 = 전달 + 신규 시작 − 중단 − 치료 종료(18개월 전 시작 환자). 매출 = 활성 환자 × 월 70만원, 방학 달 +10%. 신규 시작은 방학 달에 늘고, 2027년부터 PA 효과를 더합니다. 사춘기 지연제는 월 40만원씩 증가. 그 외(진찰·검사)는 활성 환자 증가의 절반 비율로 늘고 방학 달 +15%. 수액은 12월 광고 시작 후 7개월에 걸쳐 목표 하루 환자까지 늘며 객단가 10만원·월 21일. 순이익 = 성장호르몬·사춘기 지연제 매출 × 50% + 검사·수액 등 그 외 매출 × 80% − 고정비(손익분기 × 50% = 6,000만), 4억 초과분은 2%p 차감. 검사·수액 80%는 원내 검사 전환 후 인건비를 빼고도 남는 실제 마진(원장님 기준)이며, 11월 이후 시뮬레이션에만 적용하고 지난 실적은 기존 식 그대로입니다. 기본값은 보수 시나리오. 확장 후 임대료 +200만·임상병리사 +300만은 PA·원내 검사 전환으로 만회되는 것으로 보고 손익분기 1.2억을 유지했습니다. 원금 회수 = 지금까지 실적 누적 순이익 + 시뮬레이션 순이익이 투자금(개원 5억 + 확장 3억)에 닿는 달.</div>
+      </details>
+    </div>
+  </details>
+
   <details class="sec fold" id="foldAna">
     <summary class="sec-head"><h2>분석</h2><span class="note">숫자를 갱신하면 자동으로 다시 씁니다</span></summary>
     <div class="panel ana" id="anaBody"></div>
@@ -246,6 +315,7 @@ details.how .note{max-width:70ch;margin-top:6px}
   <section class="sec">
     <details class="how"><summary>ⓘ 계산 방법과 갱신 방법</summary>
       <div class="note">순이익 추정 = (매출 − 손익분기) × 50%, 월매출 4억 초과분은 48% (세전·원장님 기준). 손익분기는 인원에 따라 2026년 4월까지 1억, 5월 1.07억, 6월 1.13억, 7월부터 1.2억. 9월 실제 순이익은 약 6,000만원입니다. 월별 카드의 항목별 비용은 참고용이며, 순이익은 이 식으로 계산합니다.</div>
+      <div class="note">투자 회수 = 개원 준비 달부터의 추정 순이익 누적 ÷ 투자금(개원 5억 + 확장 3억). 하루 초진 부하 = 골연령 촬영 건수 ÷ 진료일 수. 신규 1명당 마케팅비 = 그달 마케팅비(고정비 표의 마케팅) ÷ 성장호르몬 신규 시작 수로, 마케팅비 전체를 신규 시작에만 나눈 값입니다. 세 항목 모두 위 갱신 블록 숫자에서 자동 계산됩니다.</div>
       <div class="note">매달 초 오름차트의 진료비 산정내역(월별)과 처방별 통계(주사) 화면 캡처, 성장호르몬 리스트 엑셀을 Claude에게 보내면 이 페이지의 숫자와 그래프를 갱신합니다. 초진 수는 처방별 통계(영상의학 · ba) 캡처에서 골연령 촬영 건수로, 진료일 수는 휴진 안내 기준(화~토 − 휴진)으로 넣습니다.</div>
     </details>
   </section>
@@ -543,7 +613,134 @@ document.getElementById('upd').innerHTML='최근 반영<br>'+LATEST_LABEL;
   if(hm)setTimeout(()=>document.getElementById('monthly').scrollIntoView(),50);
   document.addEventListener('click',e=>{const a=e.target.closest('a[data-m]');if(a){e.preventDefault();showMonth(+a.dataset.m);document.getElementById('monthly').scrollIntoView({behavior:'smooth'})}});
 })();
-function all(){drawRev();drawStarts();drawBA();drawProj();}
+// ===== 2027 시뮬레이션 =====
+const SIMP={low:{start:22,season:20,pa:5,drop:5,iv:5,bep:12000},base:{start:25,season:25,pa:10,drop:4,iv:8,bep:12000},high:{start:28,season:30,pa:15,drop:3,iv:10,bep:12000}};
+let simP={...SIMP.low};
+function simRun(p){
+  const L=LAST,k0=MK[L],y0=+k0.slice(0,4),m0=+k0.slice(5,7),VAC=[12,1,2,7,8];
+  const hist=ST.slice(0,L+1+ST_OFFSET),out=[];let A=SIMBASE.active,kk=0;
+  const ivB=SIMBASE.ivNow*21*0.1, othB=REV[L]-GH[L]-PUB[L]-ivB;
+  for(let y=y0,m=m0+1;y<2027||(y===2027&&m<=12);m++){
+    if(m>12){m=1;y++}
+    const vac=VAC.includes(m);
+    const N=p.start*(vac?1+p.season/100:1)*(y>=2027?1+p.pa/100:1);
+    const done=hist.length-18>=0?hist[hist.length-18]:0;
+    const A0=A;A=Math.max(0,A+N-p.drop-done);hist.push(N);kk++;
+    const avg=(A0+A)/2;
+    const gh=avg*0.70*(vac?1.10:1);
+    const pub=PUB[L]+0.4*kk;
+    const adM=(y-2026)*12+m-12; // 2026-12 = 0
+    const ivDay=adM<0?SIMBASE.ivNow:Math.min(p.iv,SIMBASE.ivNow+(p.iv-SIMBASE.ivNow)*adM/7);
+    const iv=ivDay*21*0.1;
+    const oth=othB*(1+0.5*(avg/SIMBASE.active-1))*(vac?1.15:1);
+    const R=gh+pub+oth+iv,Rm=R*100,B=p.bep;
+    // 성장호르몬·사춘기 지연제는 50%, 검사·수액(그 외)은 원내 검사 전환 후 실제 마진 80% (원장님 기준), 고정비 = 손익분기 × 50%
+    const net=(gh+pub)*100*0.5+(oth+iv)*100*0.8-B*0.5-(Rm>40000?(Rm-40000)*0.02:0);
+    out.push({y,m,A,N,gh,pub,oth,iv,R,net});
+  }
+  return out;
+}
+function drawSim(){
+  const box=document.getElementById('simChart');if(!box)return;
+  const p=simP,lab={start:v=>v+'명',season:v=>'+'+v+'%',pa:v=>'+'+v+'%',drop:v=>fmt(v,1)+'명',iv:v=>v+'명',bep:v=>fmt(v/10000,2)+'억'};
+  for(const k in lab){const i=document.getElementById('s_'+k);if(+i.value!==p[k])i.value=p[k];document.getElementById('o_'+k).textContent=lab[k](p[k])}
+  const r=simRun(p);
+  // 누적: 실적 순이익(개원 준비 달 포함) + 시뮬레이션
+  let cum=0;for(let i=0;i<=LAST;i++)cum+=model(i).net;
+  const inv=SIMBASE.invest*10000;let hit=null,goal=null;
+  r.forEach(o=>{cum+=o.net;o.cum=cum;if(hit==null&&cum>=inv)hit=o;if(goal==null&&o.R>=500)goal=o});
+  const y27=r.filter(o=>o.y===2027),tR=y27.reduce((a,o)=>a+o.R,0),tN=y27.reduce((a,o)=>a+o.net,0);
+  const dec26=r.find(o=>o.y===2026&&o.m===12),ym=o=>`${String(o.y).slice(2)}년 ${o.m}월`;
+  const money=v=>v>=100?fmt(v/100,2)+'<small>억</small>':W0(v*100)+'<small>만</small>';
+  document.getElementById('simKpi').innerHTML=
+   (dec26?`<div class="kpi"><span class="k">26년 12월 매출</span><span class="v">${money(dec26.R)}</span><span class="d flat">원장님 예상 3억</span></div>`:'')+
+   `<div class="kpi"><span class="k">2027년 총매출</span><span class="v">${fmt(tR/100,1)}<small>억</small></span><span class="d flat">월평균 ${fmt(tR/1200,2)}억</span></div>`+
+   `<div class="kpi"><span class="k">2027년 순이익 (세전)</span><span class="v">${fmt(tN/10000,1)}<small>억</small></span><span class="d flat">월평균 ${fmt(tN/120000,2)}억</span></div>`+
+   `<div class="kpi"><span class="k">투자금 ${SIMBASE.invest}억 회수</span><span class="v">${hit?ym(hit):'2028년 이후'}</span><span class="d flat">개원 5억 + 확장 3억</span></div>`+
+   `<div class="kpi"><span class="k">월매출 5억 도달</span><span class="v">${goal?ym(goal):'2027년 안 미도달'}</span><span class="d flat">${goal?'':'27년 12월 '+fmt(r[r.length-1].R/100,2)+'억'}</span></div>`;
+  // 차트: 최근 실적 6개월 + 시뮬레이션
+  const s=box;s.innerHTML='';const W=900,Hh=300,Lf=50,T=28,H=220;s.setAttribute('viewBox',`0 0 ${W} ${Hh}`);
+  const act=[];for(let i=Math.max(0,LAST-5);i<=LAST;i++)act.push({lab:M[i],R:REV[i],net:model(i).net,a:1});
+  const bars=[...act,...r.map(o=>({lab:(o.m===1?String(o.y).slice(2)+'.':'')+o.m+'월',R:o.R,net:o.net,a:0}))];
+  const n=bars.length,max=Math.max(...bars.map(b=>b.R*100))*1.12,step=10000;
+  for(let v=0;v<=max;v+=step){const y=T+H-v/max*H;s.appendChild(el('line',{x1:Lf,x2:W-8,y1:y,y2:y,stroke:css('--line')}));s.appendChild(el('text',{x:Lf-6,y:y+4,'text-anchor':'end','font-size':13,fill:css('--muted')},v?(v/10000)+'억':'0'))}
+  const gw=(W-Lf-12)/n,bw=gw*0.66,X=i=>Lf+gw*i+(gw-bw)/2,Y=v=>T+H-v/max*H;
+  const gy=Y(50000);if(gy>T){s.appendChild(el('line',{x1:Lf,x2:W-8,y1:gy,y2:gy,stroke:css('--warn'),'stroke-dasharray':'2 4'}));s.appendChild(el('text',{x:Lf+6,y:gy-6,'font-size':13,'font-weight':600,fill:css('--warn')},'목표 5억'))}
+  let d='';
+  bars.forEach((b,i)=>{const v=b.R*100;
+    s.appendChild(el('rect',{x:X(i),y:Y(v),width:bw,height:T+H-Y(v),rx:2,fill:b.a?css('--gh'):css('--proj')}));
+    if(i%2===(n-1)%2)s.appendChild(el('text',{x:X(i)+bw/2,y:T+H+20,'text-anchor':'middle','font-size':12,fill:css('--muted')},b.lab));
+    d+=(i?'L':'M')+(X(i)+bw/2).toFixed(1)+','+Y(Math.max(0,b.net)).toFixed(1);
+    if(i===n-1||i===act.length-1)s.appendChild(el('text',{x:X(i)+bw/2,y:Y(v)-8,'text-anchor':'middle','font-size':14,'font-weight':700,fill:css('--fg')},fmt(b.R/100,2)+'억'));});
+  s.appendChild(el('path',{d,fill:'none',stroke:css('--fg'),'stroke-width':2,'stroke-linejoin':'round'}));
+  // 표
+  let h=`<thead><tr><th>월</th><th>매출</th><th class="x">성장호르몬</th><th class="x">그 외·수액</th><th class="x">활성 GH</th><th>순이익</th><th>누적 순이익</th></tr></thead><tbody>`;
+  r.forEach(o=>{h+=`<tr class="${o.y===2027?'y27':''}${o===hit?' hit':''}"><td>${String(o.y).slice(2)}.${o.m}${o===hit?' 회수':''}</td><td>${fmt(o.R/100,2)}억</td><td class="x">${fmt(o.gh/100,2)}억</td><td class="x">${W0((o.oth+o.iv+o.pub)*100)}만</td><td class="x">${Math.round(o.A)}명</td><td>${W0(o.net)}만</td><td>${fmt(o.cum/10000,2)}억</td></tr>`});
+  h+=`</tbody><tfoot><tr><td>2027 합계</td><td>${fmt(tR/100,1)}억</td><td class="x"></td><td class="x"></td><td class="x"></td><td>${fmt(tN/10000,1)}억</td><td></td></tr></tfoot>`;
+  document.getElementById('simTbl').innerHTML=h;
+}
+document.addEventListener('input',e=>{const t=e.target;if(t.id&&t.id.startsWith('s_')){simP[t.id.slice(2)]=+t.value;document.querySelectorAll('.sim .chip').forEach(c=>c.setAttribute('aria-pressed','false'));drawSim()}});
+document.addEventListener('click',e=>{const c=e.target.closest('.sim .chip');if(!c)return;simP={...SIMP[c.dataset.p]};document.querySelectorAll('.sim .chip').forEach(x=>x.setAttribute('aria-pressed',String(x===c)));drawSim()});
+// ===== 하루 초진 부하 · 신규 1명당 마케팅비 · 투자 회수 (기존 데이터로 자동 계산) =====
+function drawLoad(){
+  const s=document.getElementById('loadChart');if(!s)return;s.innerHTML='';const W=900,Hh=256,L=40,T=22,H=190;s.setAttribute('viewBox',`0 0 ${W} ${Hh}`);
+  const val=i=>(isNum(BA[i])&&isNum(DAYS[i])&&DAYS[i]>0)?BA[i]/DAYS[i]:null;
+  let idx=[...Array(M.length).keys()].filter(i=>val(i)!=null);if(PHONE.matches&&idx.length>12)idx=idx.slice(-12);
+  const n=idx.length;
+  if(!n){s.appendChild(el('text',{x:W/2,y:Hh/2,'text-anchor':'middle','font-size':14,fill:css('--muted')},'진료일 수가 들어오면 표시됩니다'));return}
+  const LIM=10,PA=15;
+  const max=Math.max(20,ceilTo(Math.max(...idx.map(val))*1.15,5));axisY(s,W,L,T,H,max,5);
+  [[LIM,'--warn'],[PA,'--muted']].forEach(([v,c])=>{const y=T+H-v/max*H;
+    s.appendChild(el('line',{x1:L,x2:W-8,y1:y,y2:y,stroke:css(c),'stroke-width':2,'stroke-dasharray':'6 5'}))});
+  const bw=(W-L-16)/n,lf=labelFs(n);
+  idx.forEach((i,j)=>{const x=L+j*bw+bw*0.22,w=bw*0.56,v=val(i),cx=x+w/2,h=v/max*H,y=T+H-h;
+    s.appendChild(el('text',{x:cx,y:T+H+22,'text-anchor':'middle','font-size':lf,fill:css('--muted')},M[i]));
+    s.appendChild(el('rect',{x,y,width:w,height:h,rx:2,fill:v>LIM?css('--warn'):css('--gh-soft')}));
+    s.appendChild(el('text',{x:cx,y:y-6,'text-anchor':'middle','font-size':15,'font-weight':700,fill:css('--fg'),stroke:css('--surface'),'stroke-width':4,'paint-order':'stroke','stroke-linejoin':'round'},fmt(v,1)));});
+  const over=idx.filter(i=>val(i)>LIM).length;
+  s.setAttribute('aria-label',`월별 진료일 하루당 초진 수. ${n}개월 중 ${over}개월이 하루 10명 초과`);
+}
+function mktAt(i){const it=fixFor(i).items.find(x=>x[0]==='마케팅');return it?it[1]:null}
+function drawMkt(){
+  const s=document.getElementById('mktChart');if(!s)return;s.innerHTML='';const W=900,Hh=256,L=44,T=22,H=190;s.setAttribute('viewBox',`0 0 ${W} ${Hh}`);
+  const val=i=>{const c=mktAt(i),st=stAt(i);return(!PREP(i)&&c!=null&&st)?c/st:null};
+  const per=i=>{const c=mktAt(i);return(!PREP(i)&&c!=null&&isNum(BA[i])&&BA[i]>0)?c/BA[i]:null};
+  const idx=visIdx(M.length).filter(i=>val(i)!=null),n=idx.length,kp=document.getElementById('mktKpi');
+  if(!n){if(kp)kp.innerHTML='';s.appendChild(el('text',{x:W/2,y:Hh/2,'text-anchor':'middle','font-size':14,fill:css('--muted')},'신규 시작 수가 들어오면 표시됩니다'));return}
+  const max=Math.max(40,ceilTo(Math.max(...idx.map(val))*1.15,20));axisY(s,W,L,T,H,max,20);
+  const bw=(W-L-16)/n,lf=labelFs(n),vf=n>12?13:15,li=idx[n-1];
+  idx.forEach((i,j)=>{const x=L+j*bw+bw*0.22,w=bw*0.56,v=val(i),cx=x+w/2,h=v/max*H,y=T+H-h;
+    s.appendChild(el('text',{x:cx,y:T+H+22,'text-anchor':'middle','font-size':lf,fill:css('--muted')},M[i]));
+    s.appendChild(el('rect',{x,y,width:w,height:h,rx:2,fill:i===li?css('--gh'):css('--gh-soft')}));
+    s.appendChild(el('text',{x:cx,y:y-5,'text-anchor':'middle','font-size':vf,'font-weight':700,fill:css('--fg')},Math.round(v)));});
+  if(kp){const l3=idx.slice(-3),c3=l3.reduce((a,i)=>a+mktAt(i),0),s3=l3.reduce((a,i)=>a+stAt(i),0),p=per(li);
+    kp.innerHTML=`<div class="kpi"><span class="k">${M[li]} 시작 1명당</span><span class="v">${W0(val(li))}<small>만</small></span><span class="d flat">마케팅 ${W0(mktAt(li))}만 ÷ 시작 ${stAt(li)}명</span></div>`+
+      (p!=null?`<div class="kpi"><span class="k">${M[li]} 초진 1명당</span><span class="v">${fmt(p,1)}<small>만</small></span><span class="d flat">초진 ${BA[li]}명</span></div>`:'')+
+      (s3?`<div class="kpi"><span class="k">최근 ${l3.length}개월 평균 (시작 1명당)</span><span class="v">${W0(c3/s3)}<small>만</small></span><span class="d flat">시작 ${s3}명</span></div>`:'');}
+}
+function drawPayback(){
+  const box=document.getElementById('payBody');if(!box)return;
+  let cum=0,low=0,lowI=0;for(let i=0;i<=LAST;i++){cum+=model(i).net;if(cum<low){low=cum;lowI=i}}
+  const inv=SIMBASE.invest*10000,pct=Math.max(0,Math.min(1,cum/inv)),rest=inv-cum;
+  let a=0,c=0;for(let i=Math.max(0,LAST-2);i<=LAST;i++){a+=model(i).net;c++}const avg=a/c;
+  const ymk=k=>`${k.slice(2,4)}년 ${+k.slice(5,7)}월`;
+  let eta='–',etaD='';
+  if(rest<=0){eta='회수 완료'}
+  else if(avg>0){const mo=Math.ceil(rest/avg),t=(+MK[LAST].slice(0,4))*12+(+MK[LAST].slice(5,7))-1+mo;eta=`${String(Math.floor(t/12)).slice(2)}년 ${t%12+1}월`;etaD=`약 ${mo}개월 뒤`}
+  else{etaD='최근 순이익이 0 이하'}
+  const eok=v=>(v<0?'−':'')+fmt(Math.abs(v)/10000,2);
+  box.innerHTML=`<div class="gz">
+    <div class="gz-top"><span class="gz-v">${eok(cum)}<small>억</small></span><span class="gz-t">/ ${SIMBASE.invest}억 · ${Math.round(cum/inv*100)}% 회수</span></div>
+    <div class="gz-bar" role="img" aria-label="투자금 ${SIMBASE.invest}억 중 ${Math.round(cum/inv*100)}% 회수"><i style="width:${(pct*100).toFixed(1)}%"></i></div>
+    <div class="kpis">
+      <div class="kpi"><span class="k">남은 금액</span><span class="v">${eok(Math.max(0,rest))}<small>억</small></span><span class="d flat">${LATEST_LABEL}까지 누적 기준</span></div>
+      <div class="kpi"><span class="k">최근 ${c}개월 월평균 순이익</span><span class="v">${W0(avg)}<small>만</small></span><span class="d flat">세전 추정식 기준</span></div>
+      <div class="kpi"><span class="k">이 속도 그대로면 회수</span><span class="v">${eta}</span><span class="d flat">${etaD}</span></div>
+    </div>
+    ${low<0?`<div class="note">누적이 가장 낮았던 때는 ${ymk(MK[lowI])} (${eok(low)}억)였고, 지금은 거기서 ${eok(cum-low)}억 올라왔습니다. 성장 가정을 넣은 회수 시점은 아래 2027 시뮬레이션에 있습니다.</div>`:''}
+  </div>`;
+}
+function all(){drawRev();drawStarts();drawBA();drawLoad();drawMkt();drawPayback();drawProj();drawSim();}
 document.addEventListener('click',e=>{
   const g=e.target.closest('tr.grp');if(g){const k=g.dataset.g,rows=document.querySelectorAll('.g-'+k);const open=rows[0]&&!rows[0].hidden;rows.forEach(r=>r.hidden=open);g.querySelector('.tg').textContent=open?'▾':'▴';return}
   const sv=e.target.closest('svg.zoom');if(sv&&!e.target.closest('#lb')){const lb=document.createElement('div');lb.id='lb';const title=sv.closest('.sec').querySelector('h2').textContent;

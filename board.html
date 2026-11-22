@@ -731,8 +731,10 @@ function drawPayback(){
   const ymk=k=>`${k.slice(2,4)}년 ${+k.slice(5,7)}월`;
   let eta='–',etaD='';
   if(rest<=0){eta='회수 완료'}
-  else if(avg>0){const mo=Math.ceil(rest/avg),t=(+MK[LAST].slice(0,4))*12+(+MK[LAST].slice(5,7))-1+mo;eta=`약 ${mo}개월 뒤`;etaD=`최근 ${c}개월 속도 기준`}
-  else{etaD='최근 순이익이 0 이하'}
+  else{ // 매출이 계속 늘고 있으므로 최근 속도 고정이 아니라 2027 시뮬레이션 '기본' 시나리오의 순이익을 쌓아 8억에 닿는 달을 찾음
+    const r=simRun({...SIMP.base});let cc=cum,k=-1;for(let j=0;j<r.length;j++){cc+=r[j].net;if(cc>=inv){k=j;break}}
+    if(k>=0){eta=`${String(r[k].y).slice(2)}년 ${r[k].m}월`;etaD=`약 ${k+1}개월 뒤 · 기본 시나리오 기준`}
+    else{eta='2028년 이후';etaD='기본 시나리오 기준'}}
   const eok=v=>(v<0?'−':'')+fmt(Math.abs(v)/10000,2);
   box.innerHTML=`<div class="gz">
     <div class="gz-top"><span class="gz-v">${eok(cum)}<small>억</small></span><span class="gz-t">/ ${SIMBASE.invest}억 · ${Math.round(cum/inv*100)}% 회수</span></div>
@@ -740,9 +742,9 @@ function drawPayback(){
     <div class="kpis">
       <div class="kpi"><span class="k">남은 금액</span><span class="v">${eok(Math.max(0,rest))}<small>억</small></span><span class="d flat">${cnt?LATEST_LABEL+'까지 반영':ymk(pf)+' 실적부터 반영'}</span></div>
       <div class="kpi"><span class="k">최근 ${c}개월 월평균 순이익</span><span class="v">${W0(avg)}<small>만</small></span><span class="d flat">세전 추정식 기준</span></div>
-      <div class="kpi"><span class="k">이 속도 그대로면 회수</span><span class="v">${eta}</span><span class="d flat">${etaD}</span></div>
+      <div class="kpi"><span class="k">지금 추세라면 회수</span><span class="v">${eta}</span><span class="d flat">${etaD}</span></div>
     </div>
-    <div class="note">투자금 ${SIMBASE.invest}억에 대해 ${ymk(pf)} 실적부터의 순이익(초기 적자 포함)을 모두 회수로 쌓습니다. 성장 가정을 넣은 회수 시점은 아래 2027 시뮬레이션에 있습니다.</div>
+    <div class="note">투자금 ${SIMBASE.invest}억에 대해 ${ymk(pf)} 실적부터의 순이익(초기 적자 포함)을 모두 회수로 쌓습니다. 회수 시점은 매출이 계속 느는 추세를 넣어, 아래 2027 시뮬레이션의 기본 시나리오 순이익을 이어 붙여 계산합니다(조건은 시뮬레이션에서 바꿔볼 수 있음).</div>
   </div>`;
 }
 function all(){drawRev();drawStarts();drawBA();drawLoad();drawMkt();drawPayback();drawProj();drawSim();}

@@ -325,7 +325,8 @@ details.how .note{max-width:70ch;margin-top:6px}
 
 <script>
 // ===== 건드리지 않는 코드 (데이터는 파일 맨 위 "매달 여기만 갱신" 블록) =====
-const RATE={gh:0.611,pub:0.67,oth:0.20,card:0.015}; // 원가율: 성장호르몬(9월 약제 가중 이익률 38.9%), 사춘기지연제(루프원만 이익), 그 외 20%, 카드수수료 1.5%
+const GHM=(()=>{const k=DRUG.filter(d=>d[2]!=null),t=k.reduce((a,d)=>a+d[1],0);return t>0?k.reduce((a,d)=>a+d[1]*d[2],0)/t:0.389})(); // 성장호르몬 가중 이익률: 위 DRUG 표(약제별 매출 × 이익률)에서 자동 계산
+const RATE={gh:1-GHM,pub:0.67,oth:0.20,card:0.015}; // 원가율: 성장호르몬(1 − 약제 가중 이익률), 사춘기지연제(루프원만 이익), 그 외 20%, 카드수수료 1.5%
 const LAST=M.length-1;
 const ymLabel=k=>k?k.slice(0,4)+'년 '+(+k.slice(5,7))+'월':'';
 const LATEST_LABEL=ymLabel(MK[LAST]);

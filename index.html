@@ -363,7 +363,7 @@ button.item:active,a.item:active{transform:scale(.98)}
         <button class="app misc" data-view="geo"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg></span><span class="lbl">동네 지표</span></button>
       </div>
     </section>
-    <p class="foot">마지막 수정 2026.11.26 · v49</p>
+    <p class="foot">마지막 수정 2026.11.26 · v50</p>
   </div></main>
 </div>
 
@@ -845,7 +845,7 @@ render();
 </script>
 <script>
 (function(){ // 원내 검사 vs 외부 위탁 계산기 (2027.1 검체검사 위·수탁 개편 반영). 기본값 중 [추정]은 원장님 실제 값으로 바꿔 쓰는 자리
-var root=document.getElementById('v-labcmp');if(!root)return;var body=document.getElementById('lab-body'),KEY='kh-lab-v4';
+var root=document.getElementById('v-labcmp');if(!root)return;var body=document.getElementById('lab-body'),KEY='kh-lab-v5';
 var F=[ // [id, 이름, 설명, 기본값, 꼬리표(k=확정,e=추정), 단위, 범위면 기본 최대값]
  ['h1','① 우리 검사량 (한 달)'],
  ['gCnt','급여 검사 환자 수','한 달 혈액검사 환자 중 건강보험으로 청구한 환자. 10월 137명 × 80% (원장님 기준)',110,'k','명'],
@@ -859,6 +859,7 @@ var F=[ // [id, 이름, 설명, 기본값, 꼬리표(k=확정,e=추정), 단위,
  ['h3','③ 원내로 하면 (한 달 비용)'],
  ['ppl','임상병리사 인건비','급여 280만(원장님 기준). 최대는 4대보험·퇴직금 병원 부담을 더한 값',[280,330],'k','만'],
  ['eq','장비 리스·유지보수','1대는 구입, 나머지는 리스. 리스료 합계를 알면 바꿔 넣기',[100,200],'e','만'],
+ ['sv','임상병리사가 대신하는 간호 업무','채혈을 맡아 간호사가 PA 업무로 옮겨 갈 수 있는 몫. 간호사 1명이 통째로 빠지는 건 아니라(수액 AN은 따로 필요) PA 1명 인건비보다 적게 잡음',[50,150],'e','만'],
  ['qc','정도관리·폐기물','외부 정도관리 평가비, 의료폐기물',[30,50],'e','만'],
  ['rg','시약·소모품 원가율','검사료 대비 시약값 비율. 원장님 예상 10% 안팎 (이엔바이오 청구서 나오면 확인)',[8,12],'e','%'],
  ['h4','④ 제도 (2027년 1월)'],
@@ -876,7 +877,7 @@ function calc(){
   var G=V.gCnt*V.gFee*(1-V.cut/100)*(V.st2?110/150:1); // 개편 후 급여 검사료 총액
   var N=V.nCnt*V.nFee;
   var oLo=G*V.base/100+V.nCnt*(V.nFee-V.nLab), oHi=G*(V.base+V.cond)/100+V.nCnt*(V.nFee-V.nLab);
-  var fx=[V.ppl[0]+V.eq[0]+V.qc[0],V.ppl[1]+V.eq[1]+V.qc[1]];
+  var fx=[V.ppl[0]+V.eq[0]+V.qc[0]-V.sv[1],V.ppl[1]+V.eq[1]+V.qc[1]-V.sv[0]];
   var iLo=(G+N)*(1-V.rg[1]/100)-fx[1], iHi=(G+N)*(1-V.rg[0]/100)-fx[0];
   // 손익이 같아지는 검사량: 지금 건수 비율 그대로 늘리거나 줄였을 때 (가장 나쁜 경우 = 원내 비용 최대, 위탁은 조건부 최대)
   var perUnitIn=(G+N)*(1-V.rg[1]/100), perUnitOut=oHi, k=(perUnitIn-perUnitOut)>0?fx[1]/(perUnitIn-perUnitOut):null;
@@ -890,13 +891,13 @@ function field(x){if(x.length<=3)return '';var id=x[0],v=V[id],u=x[5],tag='<span
 function result(){var r=calc(),cls,t;
   if(r.dHi<=0){cls='bad';t='외부 위탁이 유리해요'}else if(r.dLo>=0){cls='';t='원내 검사가 유리해요'}else{cls='mid';t=(r.dLo+r.dHi)/2>0?'원내가 대체로 유리 (최악이면 위탁 우위)':'위탁이 대체로 유리 (최선이면 원내 우위)'}
   var h='<div class="verdict '+cls+'" id="lab-v"><b>'+t+'</b><span>원내 − 위탁: 한 달 '+sgn(r.dLo,r.dHi)+'만 원</span></div>';
-  h+='<div class="g-kpis"><div class="g-kpi"><div class="k">원내 검사로 남는 돈</div><div class="v">'+rg(r.iLo,r.iHi)+'<small>만</small></div><div class="d">고정비 '+rg(r.fx[0],r.fx[1])+'만 포함</div></div><div class="g-kpi"><div class="k">위탁하면 남는 돈</div><div class="v">'+rg(r.oLo,r.oHi)+'<small>만</small></div><div class="d">조건부 보상 0~'+f(V.cond)+'%</div></div></div>';
+  h+='<div class="g-kpis"><div class="g-kpi"><div class="k">원내 검사로 남는 돈</div><div class="v">'+rg(r.iLo,r.iHi)+'<small>만</small></div><div class="d">고정비 '+rg(r.fx[0],r.fx[1])+'만 포함 (간호 업무 절감 반영)</div></div><div class="g-kpi"><div class="k">위탁하면 남는 돈</div><div class="v">'+rg(r.oLo,r.oHi)+'<small>만</small></div><div class="d">조건부 보상 0~'+f(V.cond)+'%</div></div></div>';
   var gin=r.G, gout=[r.G*V.base/100,r.G*(V.base+V.cond)/100], nin=r.N, nout=V.nCnt*(V.nFee-V.nLab);
   h+='<div class="section"><div class="section-head"><span class="dot growth"></span><span class="section-title">한 달 손익표 (만 원)</span></div><div class="s-card g-tbl l-tbl"><table><thead><tr><th>구분</th><th>원내</th><th>위탁</th></tr></thead><tbody>';
   h+='<tr><td>급여 검사 (개편 후)</td><td>'+f(gin)+'</td><td>'+rg(gout[0],gout[1])+'</td></tr>';
   h+='<tr><td>비급여 검사</td><td>'+f(nin)+'</td><td>'+f(nout)+'</td></tr>';
   h+='<tr><td>시약·소모품</td><td>−'+rg((gin+nin)*V.rg[0]/100,(gin+nin)*V.rg[1]/100)+'</td><td>0</td></tr>';
-  h+='<tr><td>인건비·장비·정도관리</td><td>−'+rg(r.fx[0],r.fx[1])+'</td><td>0</td></tr>';
+  h+='<tr><td>인건비·장비·정도관리</td><td>−'+rg(r.fx[0]+V.sv[1],r.fx[1]+V.sv[0])+'</td><td>0</td></tr><tr><td>대신하는 간호 업무</td><td>+'+rg(V.sv[0],V.sv[1])+'</td><td>0</td></tr>';
   h+='<tr class="tot"><td>남는 돈</td><td>'+rg(r.iLo,r.iHi)+'</td><td>'+rg(r.oLo,r.oHi)+'</td></tr></tbody></table></div>';
   h+='<div class="g-sub" style="margin-top:8px">'+(r.be==null?'이 조건에서는 검사량을 늘려도 원내가 위탁을 따라잡지 못해요.':'가장 나쁜 경우로 잡아도 한 달 검사 환자 <b>'+f(r.be)+'명</b>(급여+비급여)을 넘으면 원내가 유리해요. 지금 입력은 '+f(V.gCnt+V.nCnt)+'명.')+'</div></div>';
   return h}

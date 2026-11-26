@@ -363,7 +363,7 @@ button.item:active,a.item:active{transform:scale(.98)}
         <button class="app misc" data-view="geo"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg></span><span class="lbl">동네 지표</span></button>
       </div>
     </section>
-    <p class="foot">마지막 수정 2026.11.26 · v46</p>
+    <p class="foot">마지막 수정 2026.11.26 · v47</p>
   </div></main>
 </div>
 
@@ -845,15 +845,15 @@ render();
 </script>
 <script>
 (function(){ // 원내 검사 vs 외부 위탁 계산기 (2027.1 검체검사 위·수탁 개편 반영). 기본값 중 [추정]은 원장님 실제 값으로 바꿔 쓰는 자리
-var root=document.getElementById('v-labcmp');if(!root)return;var body=document.getElementById('lab-body'),KEY='kh-lab-v1';
+var root=document.getElementById('v-labcmp');if(!root)return;var body=document.getElementById('lab-body'),KEY='kh-lab-v2';
 var F=[ // [id, 이름, 설명, 기본값, 꼬리표(k=확정,e=추정), 단위, 범위면 기본 최대값]
  ['h1','① 우리 검사량 (한 달)'],
- ['gCnt','급여 검사 건수','건강보험으로 청구하는 혈액검사 환자 수',80,'e','건'],
- ['gFee','급여 건당 검사료','공단+본인부담 중 검사료 부분 (지금 수가, 위탁관리료 10% 빼고)',3.4,'e','만'],
- ['nCnt','비급여 검사 건수','성장검사 패키지처럼 비급여로 받는 검사 환자 수 (MAST 제외)',120,'e','건'],
- ['nFee','비급여 건당 검사료','보호자에게 받는 금액 중 검사 몫 (진찰·판독 제외)',15,'e','만'],
+ ['gCnt','급여 검사 환자 수','한 달 혈액검사 환자 중 건강보험으로 청구한 환자. 10월 전체 137명을 반반으로 나눠 둔 값',69,'e','명'],
+ ['gFee','급여 환자 1명당 검사료','10월 씨젠 명세 기준가 ÷ 137명 (MAST·IgE·아연 제외, 지금 수가)',17.2,'k','만'],
+ ['nCnt','비급여 검사 환자 수','성장검사 패키지처럼 비급여로 받은 환자 (MAST 제외)',68,'e','명'],
+ ['nFee','비급여 환자 1명당 검사료','보호자에게 받는 금액 중 검사 몫 (진찰·판독 제외). 기준가와 같다고 둔 값',17.2,'e','만'],
  ['h2','② 위탁하면'],
- ['nLab','비급여 건당 위탁비','씨젠 등 검사기관에 1건당 내는 돈',8,'e','만'],
+ ['nLab','비급여 1명당 위탁비','10월 씨젠 청구액 1,130만 ÷ 기준가 3,404만 = 33.2% → 17.2만 × 33.2%',5.7,'k','만'],
  ['base','의원 기본 몫','2027년부터 급여 검사료 중 의원(위탁기관)이 조건 없이 받는 비율',25,'k','%'],
  ['cond','조건부 보상 최대','결과 설명·관리 등 조건을 채우면 더 받는 몫 (2년 한시). 0~이 값 사이로 계산',10,'k','%'],
  ['h3','③ 원내로 하면 (한 달 비용)'],
@@ -871,7 +871,7 @@ F.forEach(function(x){if(x.length>3&&V[x[0]]==null)V[x[0]]=Array.isArray(x[3])?x
 function save(){try{localStorage.setItem(KEY,JSON.stringify(V))}catch(e){}}
 function f(n){return Math.round(n).toLocaleString('ko-KR')}
 function rg(a,b){var lo=Math.min(a,b),hi=Math.max(a,b);return Math.round(lo)===Math.round(hi)?f(lo):f(lo)+'~'+f(hi)}
-function sgn(a,b){var lo=Math.min(a,b),hi=Math.max(a,b);if(Math.round(lo)===Math.round(hi))return (lo<0?'−':'+')+f(Math.abs(lo));if(hi<0)return '−'+f(-hi)+' ~ −'+f(-lo);if(lo>0)return '+'+f(lo)+' ~ +'+f(hi);return (lo<0?'−'+f(-lo):'+'+f(lo))+' ~ +'+f(hi)}
+function sgn(a,b){var lo=Math.min(a,b),hi=Math.max(a,b);if(Math.round(lo)===Math.round(hi))return (lo<0?'−':'+')+f(Math.abs(lo));if(hi<0)return '−'+f(-lo)+' ~ −'+f(-hi);if(lo>0)return '+'+f(lo)+' ~ +'+f(hi);return (lo<0?'−'+f(-lo):'+'+f(lo))+' ~ +'+f(hi)}
 function calc(){
   var G=V.gCnt*V.gFee*(1-V.cut/100)*(V.st2?110/150:1); // 개편 후 급여 검사료 총액
   var N=V.nCnt*V.nFee;
@@ -898,12 +898,12 @@ function result(){var r=calc(),cls,t;
   h+='<tr><td>시약·소모품</td><td>−'+rg((gin+nin)*V.rg[0]/100,(gin+nin)*V.rg[1]/100)+'</td><td>0</td></tr>';
   h+='<tr><td>인건비·장비·정도관리</td><td>−'+rg(r.fx[0],r.fx[1])+'</td><td>0</td></tr>';
   h+='<tr class="tot"><td>남는 돈</td><td>'+rg(r.iLo,r.iHi)+'</td><td>'+rg(r.oLo,r.oHi)+'</td></tr></tbody></table></div>';
-  h+='<div class="g-sub" style="margin-top:8px">'+(r.be==null?'이 조건에서는 검사량을 늘려도 원내가 위탁을 따라잡지 못해요.':'가장 나쁜 경우로 잡아도 한 달 검사 <b>'+f(r.be)+'건</b>(급여+비급여)을 넘으면 원내가 유리해요. 지금 입력은 '+f(V.gCnt+V.nCnt)+'건.')+'</div></div>';
+  h+='<div class="g-sub" style="margin-top:8px">'+(r.be==null?'이 조건에서는 검사량을 늘려도 원내가 위탁을 따라잡지 못해요.':'가장 나쁜 경우로 잡아도 한 달 검사 환자 <b>'+f(r.be)+'명</b>(급여+비급여)을 넘으면 원내가 유리해요. 지금 입력은 '+f(V.gCnt+V.nCnt)+'명.')+'</div></div>';
   return h}
 function render(){var h='<div id="lab-res">'+result()+'</div>';var sec='';
   F.forEach(function(x){if(x.length===2){if(sec)h+='</div></div></div>';h+='<div class="section"><div class="section-head"><span class="dot fluid"></span><span class="section-title">'+x[1]+'</span></div><div class="s-card"><div class="l-in">';sec=1}else h+=field(x)});
   h+='</div></div></div><button type="button" class="l-reset" id="lab-reset">기본값으로</button>';
-  h+='<div class="g-note">계산 방법: 2027년부터 급여 검사료는 평균 28% 깎이고, 위탁하면 깎인 검사료의 25%(조건 채우면 최대 35%)만 의원 몫, 원내로 하면 깎인 검사료 전체가 의원 몫이에요. 비급여는 위탁하면 받은 돈에서 위탁비를 빼고, 원내면 시약값만 빠져요. 범위는 원내 비용 최소~최대와 조건부 보상 0%~최대를 모두 넣은 결과예요.<br><b>추정</b> 표시 값은 예시예요. 실제 검사 건수, 씨젠 거래 명세, 임상병리사 급여, 장비 계약서 숫자로 바꿔 넣어야 정확해요. MAST처럼 계속 외부로 보내는 검사는 넣지 마세요.<br>참고: 다른 의원(임종원)의 원내 vs 위탁 비교 자료를 바탕으로, 2026년 6월 건정심 의결 내용으로 만들었어요.</div>';
+  h+='<div class="g-note">계산 방법: 2027년부터 급여 검사료는 평균 28% 깎이고, 위탁하면 깎인 검사료의 25%(조건 채우면 최대 35%)만 의원 몫, 원내로 하면 깎인 검사료 전체가 의원 몫이에요. 비급여는 위탁하면 받은 돈에서 위탁비를 빼고, 원내면 시약값만 빠져요. 범위는 원내 비용 최소~최대와 조건부 보상 0%~최대를 모두 넣은 결과예요.<br>검사량·검사료·위탁비는 2026년 10월 씨젠 명세(기준가 3,404만, 청구 1,130만, 환자 약 137명)에서 가져왔어요. <b>추정</b> 표시 값(급여·비급여 비율, 비급여 받는 금액, 원내 비용)은 실제 값으로 바꿔 넣어야 정확해요. MAST처럼 계속 외부로 보내는 검사는 넣지 마세요.<br>참고: 다른 의원(임종원)의 원내 vs 위탁 비교 자료를 바탕으로, 2026년 6월 건정심 의결 내용으로 만들었어요.</div>';
   body.innerHTML=h}
 body.addEventListener('input',function(e){var t=e.target,k=t.getAttribute('data-k');if(!k)return;
   if(t.type==='checkbox')V[k]=t.checked?1:0;else{var n=parseFloat(t.value);if(!isFinite(n))return;if(t.hasAttribute('data-i'))V[k][+t.getAttribute('data-i')]=n;else V[k]=n}

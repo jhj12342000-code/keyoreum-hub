@@ -1,4 +1,13 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.ck{background:var(--card,#fbfaf6);border:1px solid var(--line,#e3ded2);border-radius:16px;padding:14px 16px;margin-bottom:16px}
+.ck h3{font-size:.95rem;margin:0 0 6px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.ck h3 span{font-size:.78rem;font-weight:600;opacity:.6;font-variant-numeric:tabular-nums}
+.ck label{display:grid;grid-template-columns:26px minmax(0,1fr);gap:8px;padding:10px 0;border-top:1px solid var(--line,#e3ded2);align-items:start;cursor:pointer}
+.ck input{width:22px;height:22px;margin:1px 0 0;accent-color:#22504a}
+.ck label span{font-size:.86rem;line-height:1.45}
+.ck label small{display:block;font-size:.76rem;opacity:.7;margin-top:3px;line-height:1.5;word-break:keep-all}
+.ck label:has(input:checked) span{opacity:.5;text-decoration:line-through}.ck label:has(input:checked) small{display:none}
+.ck p{font-size:.72rem;opacity:.6;margin:8px 0 0;line-height:1.5}
+</style></head><body>
 <title>키오름 자동화 허브</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <script>
@@ -11,6 +20,8 @@ const EV=[
   {date:'2026-10-28', label:'10/28',  card:'임상병리 장비 설치', stage:0, title:'임상병리 장비 설치 · 데이터 연동', sub:'임상병리실 PC 이름, 공유폴더 이름, 결과 엑셀 샘플 1개'},
   {date:'2026-10-29', label:'PC 세팅', card:'공유폴더 권한 설정',        stage:1, title:'PA · 임상병리사 공유폴더 권한',   sub:'간호사 PDF만 · PA 엑셀만 · 임상병리사 전체'},
   {date:'2026-11-03', label:'11월',   card:'11월 원내 검사 시작',        stage:2, title:'원내 검사 시작 · 결과지 표준문장', sub:'MAST만 씨젠 수탁, 나머지는 원내 결과로'},
+  {date:'2026-12-18', label:'12/18', card:'검체검사 계약 신고 마감', stage:null, pin:true, title:'씨젠 위·수탁 계약 현황 신고 (심평원)', sub:'MAST를 계속 씨젠에 맡기므로 신고 대상 · 보건의료자원통합신고포털(hurb.or.kr) · 위 체크리스트 참고'},
+  {date:'2027-01-01', label:'1/1',   card:'검체검사 개편 시행', stage:null, title:'검체검사 위·수탁 개편 시행', sub:'급여 검사 수가 인하 · 위탁 검사는 의원 몫 25%(조건부 +10%)만 지급 · 새 청구 코드(A·B 짝)'},
   {date:'2027-01-08', label:'1/8',    card:'輸入確認証 6개월분 가능 여부 확인', stage:null, title:'輸入確認証(薬監証明) 확인', sub:'기존 일본 환자 다음 방문 때 영문 처방서로 신청 시험 · 간토신에쓰 후생국(048-740-0800)에 6개월분·정상아 적용 여부 문의'},
   {date:'2027-01-15', label:'1/15',   card:'메디컬코리아 2027 사전등록',  stage:null, title:'메디컬코리아 2027 사전등록 확인', sub:'보건산업진흥원 공고 확인 → 일반 참관 사전등록 (3월 코엑스, 휴진일에 방문)'}
 ];
@@ -363,7 +374,7 @@ button.item:active,a.item:active{transform:scale(.98)}
         <button class="app misc" data-view="geo"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg></span><span class="lbl">동네 지표</span></button>
       </div>
     </section>
-    <p class="foot">마지막 수정 2026.11.26 · v50</p>
+    <p class="foot">마지막 수정 2026.11.27 · v51</p>
   </div></main>
 </div>
 
@@ -491,6 +502,15 @@ peak LH 9.95 (45분)
 
 <div id="v-schedule" class="view dview" hidden><div class="in">
   <div class="bar"><button class="back">‹ 자동화 허브</button><h2>일정</h2></div>
+  <div class="ck" id="ck27">
+    <h3>2027년 1월 검체검사 개편 준비 <span id="ck27n"></span></h3>
+    <label><input type="checkbox" data-c="c1"><span><b>씨젠 계약 현황 신고</b> · 12월 18일까지<small>hurb.or.kr → 공인인증서 로그인 → 현황신고·변경 → 특수운영기관 신고 → 검체검사 위·수탁기관 계약 현황 신고 → 행추가 → 임시저장 → 최종제출. 준비물: 씨젠 요양기호(10월 명세서에는 11370319, 계약서로 확인), 계약 시작·종료일, 담당자 이름·전화</small></span></label>
+    <label><input type="checkbox" data-c="c2"><span><b>씨젠에 MAST 재위탁 여부 확인</b><small>씨젠이 MAST를 다른 기관에 다시 맡기면 그 기관 요양기호·계약일도 같이 신고해야 해요</small></span></label>
+    <label><input type="checkbox" data-c="c3"><span><b>오름차트 새 청구 방식 확인</b><small>1월부터 위탁 검사는 코드 두 개(의원 몫 A·검사기관 몫 B)를 짝으로 청구하고 수탁기관 기호·의뢰일·짝 번호를 적어야 해요. 빠지면 심사불능. 업데이트 일정을 오름차트에 문의</small></span></label>
+    <label><input type="checkbox" data-c="c4"><span><b>원내 검사 본격 가동</b> · 12월<small>MAST만 씨젠, 나머지는 원내. IgE는 MAST에 들어 있어 따로 내지 않음</small></span></label>
+    <label><input type="checkbox" data-c="c5"><span><b>1월 첫 청구 결과 확인</b><small>MAST 청구가 심사불능 없이 들어갔는지, 의원 몫이 맞게 지급됐는지 확인</small></span></label>
+    <p>근거: 심평원 「검체검사 위·수탁 제도개편 및 청구방법 온라인 설명회」(2026.11). 체크는 이 폰에 저장돼요.</p>
+  </div>
   <div class="group" id="schedlist"></div>
 </div></div>
 
@@ -647,7 +667,7 @@ peak LH 9.95 (45분)
       var sp=document.createElement('span');sp.textContent=e.sub;box.appendChild(sp);
       row.appendChild(b);row.appendChild(box);list.appendChild(row);
     })}
-    var ev=ALL.find(function(e){return e.date>=today});
+    var ev=ALL.find(function(e){return e.pin&&e.date>=today})||ALL.find(function(e){return e.date>=today}); // pin = 마감이 있는 일은 더 가까운 일정이 있어도 홈 카드에 먼저
     if(!ev){document.getElementById('dday').textContent='일정';document.getElementById('nxt').textContent='다음 일정을 추가하세요';throw 0}
     var d=Math.ceil((ev.date-today)/864e5);document.getElementById('dday').textContent=d>0?'D-'+d:(d===0?'D-DAY':'지남');
     document.getElementById('nxt').textContent=ev.card;var fl=document.querySelector('.flow');fl.hidden=(ev.stage==null);var sts=document.querySelectorAll('.flow .st');sts.forEach(function(s,i){s.classList.toggle('on',i===ev.stage);s.classList.toggle('done',ev.stage!=null&&i<ev.stage)})}catch(err){}
@@ -854,7 +874,7 @@ var F=[ // [id, 이름, 설명, 기본값, 꼬리표(k=확정,e=추정), 단위,
  ['nFee','비급여 환자 1명당 검사료','보호자에게 받는 금액 중 검사 몫 (진찰·판독 제외). 기준가와 같다고 둔 값',17.2,'e','만'],
  ['h2','② 위탁하면'],
  ['nLab','비급여 1명당 위탁비','10월 씨젠 청구액 1,130만 ÷ 기준가 3,404만 = 33.2% → 17.2만 × 33.2%',5.7,'k','만'],
- ['base','의원 기본 몫','2027년부터 급여 검사료 중 의원(위탁기관)이 조건 없이 받는 비율',25,'k','%'],
+ ['base','의원 기본 몫','2027년부터 급여 위탁 검사료 중 의원이 받는 위탁관리료 (심평원 설명회 2026.11: 진단검사 25%, 수탁기관 45%)',25,'k','%'],
  ['cond','조건부 보상 최대','결과 설명·관리 등 조건을 채우면 더 받는 몫 (2년 한시). 0~이 값 사이로 계산',10,'k','%'],
  ['h3','③ 원내로 하면 (한 달 비용)'],
  ['ppl','임상병리사 인건비','급여 280만(원장님 기준). 최대는 4대보험·퇴직금 병원 부담을 더한 값',[280,330],'k','만'],
@@ -862,7 +882,11 @@ var F=[ // [id, 이름, 설명, 기본값, 꼬리표(k=확정,e=추정), 단위,
  ['sv','임상병리사가 대신하는 간호 업무','채혈을 맡아 간호사가 PA 업무로 옮겨 갈 수 있는 몫. 간호사 1명이 통째로 빠지는 건 아니라(수액 AN은 따로 필요) PA 1명 인건비보다 적게 잡음',[50,150],'e','만'],
  ['qc','정도관리·폐기물','외부 정도관리 평가비, 의료폐기물',[30,50],'e','만'],
  ['rg','시약·소모품 원가율','검사료 대비 시약값 비율. 원장님 예상 10% 안팎 (이엔바이오 청구서 나오면 확인)',[8,12],'e','%'],
- ['h4','④ 제도 (2027년 1월)'],
+ ['h5','④ 계속 위탁하는 MAST (급여)'],
+ ['mCnt','MAST 건수','원내로 바꿔도 씨젠에 계속 맡기는 검사. 2026년 10월 62건',62,'k','건'],
+ ['mFee','MAST 건당 검사료','지금 수가(기준가) 114,160원',11.4,'k','만'],
+ ['mLab','지금 씨젠에 내는 비율','기준가 대비. 10월 전체 평균 33% (MAST만의 값은 검사별 청구서로 확인)',33,'e','%'],
+ ['h4','⑤ 제도 (2027년 1월)'],
  ['cut','급여 검사 수가 인하','정부 발표 평균 28%. 항목마다 다름',28,'k','%'],
  ['st2','2028년 2단계 인하 포함','원가 대비 150% → 110%로 한 번 더 깎는 것까지 넣어 보기',0,'k','chk']
 ];
@@ -881,7 +905,8 @@ function calc(){
   var iLo=(G+N)*(1-V.rg[1]/100)-fx[1], iHi=(G+N)*(1-V.rg[0]/100)-fx[0];
   // 손익이 같아지는 검사량: 지금 건수 비율 그대로 늘리거나 줄였을 때 (가장 나쁜 경우 = 원내 비용 최대, 위탁은 조건부 최대)
   var perUnitIn=(G+N)*(1-V.rg[1]/100), perUnitOut=oHi, k=(perUnitIn-perUnitOut)>0?fx[1]/(perUnitIn-perUnitOut):null;
-  return {G:G,N:N,oLo:oLo,oHi:oHi,iLo:iLo,iHi:iHi,fx:fx,dLo:iLo-oHi,dHi:iHi-oLo,be:k==null?null:k*(V.gCnt+V.nCnt)};
+  var mB=V.mCnt*V.mFee,mNow=mB*1.1-mB*V.mLab/100,mG=mB*(1-V.cut/100)*(V.st2?110/150:1),mLo=mG*V.base/100,mHi=mG*(V.base+V.cond)/100;
+  return {mNow:mNow,mLo:mLo,mHi:mHi,G:G,N:N,oLo:oLo,oHi:oHi,iLo:iLo,iHi:iHi,fx:fx,dLo:iLo-oHi,dHi:iHi-oLo,be:k==null?null:k*(V.gCnt+V.nCnt)};
 }
 function field(x){if(x.length<=3)return '';var id=x[0],v=V[id],u=x[5],tag='<span class="tag '+(x[4]==='k'?'k">확정':'e">추정')+'</span>';
   var inp;if(u==='chk')inp='<input type="checkbox" data-k="'+id+'"'+(v?' checked':'')+'>';
@@ -900,11 +925,14 @@ function result(){var r=calc(),cls,t;
   h+='<tr><td>인건비·장비·정도관리</td><td>−'+rg(r.fx[0]+V.sv[1],r.fx[1]+V.sv[0])+'</td><td>0</td></tr><tr><td>대신하는 간호 업무</td><td>+'+rg(V.sv[0],V.sv[1])+'</td><td>0</td></tr>';
   h+='<tr class="tot"><td>남는 돈</td><td>'+rg(r.iLo,r.iHi)+'</td><td>'+rg(r.oLo,r.oHi)+'</td></tr></tbody></table></div>';
   h+='<div class="g-sub" style="margin-top:8px">'+(r.be==null?'이 조건에서는 검사량을 늘려도 원내가 위탁을 따라잡지 못해요.':'가장 나쁜 경우로 잡아도 한 달 검사 환자 <b>'+f(r.be)+'명</b>(급여+비급여)을 넘으면 원내가 유리해요. 지금 입력은 '+f(V.gCnt+V.nCnt)+'명.')+'</div></div>';
+  h+='<div class="section"><div class="section-head"><span class="dot vaccine"></span><span class="section-title">계속 위탁하는 MAST (한 달, 만 원)</span></div><div class="g-sub">원내·위탁 어느 쪽이든 똑같이 줄어드는 돈이라 위 비교에는 넣지 않았어요.</div><div class="s-card g-tbl l-tbl"><table><thead><tr><th>구분</th><th>지금</th><th>2027년</th></tr></thead><tbody>';
+  h+='<tr><td>MAST에서 남는 돈</td><td>'+f(r.mNow)+'</td><td>'+rg(r.mLo,r.mHi)+'</td></tr><tr class="tot"><td>줄어드는 돈</td><td></td><td>−'+rg(r.mNow-r.mHi,r.mNow-r.mLo)+'</td></tr></tbody></table></div>';
+  h+='<div class="g-sub" style="margin-top:8px">2027년 검사 부문 전체(원내 검사 + MAST): 한 달 <b>'+rg(r.iLo+r.mLo,r.iHi+r.mHi)+'만 원</b></div></div>';
   return h}
 function render(){var h='<div id="lab-res">'+result()+'</div>';var sec='';
   F.forEach(function(x){if(x.length===2){if(sec)h+='</div></div></div>';h+='<div class="section"><div class="section-head"><span class="dot fluid"></span><span class="section-title">'+x[1]+'</span></div><div class="s-card"><div class="l-in">';sec=1}else h+=field(x)});
   h+='</div></div></div><button type="button" class="l-reset" id="lab-reset">기본값으로</button>';
-  h+='<div class="g-note">계산 방법: 2027년부터 급여 검사료는 평균 28% 깎이고, 위탁하면 깎인 검사료의 25%(조건 채우면 최대 35%)만 의원 몫, 원내로 하면 깎인 검사료 전체가 의원 몫이에요. 비급여는 위탁하면 받은 돈에서 위탁비를 빼고, 원내면 시약값만 빠져요. 범위는 원내 비용 최소~최대와 조건부 보상 0%~최대를 모두 넣은 결과예요.<br>검사량·검사료·위탁비는 2026년 10월 씨젠 명세(기준가 3,404만, 청구 1,130만, 환자 약 137명)에서 가져왔어요. 급여 80%·비급여 20%는 원장님 기준이에요. <b>추정</b> 표시 값(비급여 받는 금액, 원내 비용)은 실제 값으로 바꿔 넣어야 정확해요. MAST처럼 계속 외부로 보내는 검사는 넣지 마세요.<br>참고: 다른 의원(임종원)의 원내 vs 위탁 비교 자료를 바탕으로, 2026년 6월 건정심 의결 내용으로 만들었어요.</div>';
+  h+='<div class="g-note">계산 방법: 2027년부터 급여 검사료는 평균 28% 깎이고, 위탁하면 깎인 검사료의 25%(조건 채우면 최대 35%)만 의원 몫, 원내로 하면 깎인 검사료 전체가 의원 몫이에요. 비급여는 위탁하면 받은 돈에서 위탁비를 빼고, 원내면 시약값만 빠져요. 범위는 원내 비용 최소~최대와 조건부 보상 0%~최대를 모두 넣은 결과예요.<br>검사량·검사료·위탁비는 2026년 10월 씨젠 명세(기준가 3,404만, 청구 1,130만, 환자 약 137명)에서 가져왔어요. 급여 80%·비급여 20%는 원장님 기준이에요. <b>추정</b> 표시 값(비급여 받는 금액, 원내 비용)은 실제 값으로 바꿔 넣어야 정확해요. MAST는 ④에 따로 넣어요(①~③에는 넣지 마세요).<br>참고: 다른 의원(임종원)의 원내 vs 위탁 비교 자료를 바탕으로, 2026년 6월·10월 건정심 의결과 심평원 「검체검사 위·수탁 제도개편 및 청구방법 온라인 설명회」(2026.11) 자료로 만들었어요. 위탁 검사는 공단이 의원 몫(위탁관리료 25%)과 검사기관 몫(45%)을 따로 지급해요.</div>';
   body.innerHTML=h}
 body.addEventListener('input',function(e){var t=e.target,k=t.getAttribute('data-k');if(!k)return;
   if(t.type==='checkbox')V[k]=t.checked?1:0;else{var n=parseFloat(t.value);if(!isFinite(n))return;if(t.hasAttribute('data-i'))V[k][+t.getAttribute('data-i')]=n;else V[k]=n}
@@ -912,5 +940,10 @@ body.addEventListener('input',function(e){var t=e.target,k=t.getAttribute('data-
 body.addEventListener('click',function(e){if(e.target.id!=='lab-reset')return;V={};F.forEach(function(x){if(x.length>3)V[x[0]]=Array.isArray(x[3])?x[3].slice():x[3]});save();render()});
 render();
 })();
+</script>
+<script>
+(function(){var box=document.getElementById('ck27');if(!box)return;var K='kh-ck27',S={};try{S=JSON.parse(localStorage.getItem(K)||'{}')||{}}catch(e){}
+var cs=box.querySelectorAll('input[data-c]');function cnt(){var n=0;[].forEach.call(cs,function(c){if(c.checked)n++});document.getElementById('ck27n').textContent=n+' / '+cs.length}
+[].forEach.call(cs,function(c){c.checked=!!S[c.getAttribute('data-c')];c.addEventListener('change',function(){S[c.getAttribute('data-c')]=c.checked?1:0;try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}cnt()})});cnt()})();
 </script>
 </body></html>

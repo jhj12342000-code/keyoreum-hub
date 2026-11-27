@@ -14,14 +14,14 @@
 // ===== 매달 여기만 갱신 =====
 // EV: 일정 한 곳. 홈 D-day 카드와 '일정' 페이지가 모두 이 목록을 읽음.
 // date: 날짜(월은 0부터: 9=10월) · label: 일정 페이지 왼쪽 표시 · card: 홈 카드 제목
-// stage: 홈 카드 진행 단계(0 장비 설치·1 데이터 연동·2 원내 검사) · title/sub: 일정 페이지 내용
+// title/sub: 일정 페이지 내용
 // 날짜가 지난 항목은 일정 페이지에서 흐리게, 홈 카드는 다음 일정으로 넘어감. 모두 지나면 카드 숨김.
 const EV=[
   {date:'2026-12-05', label:'다음 주', card:'데이터 연동 · 공유폴더 마무리', stage:null, title:'임상병리 데이터 연동 · 공유폴더 권한 마무리', sub:'PA · 임상병리 PC 연결, 결과 엑셀 자동 복사'},
   {date:'2026-12-18', label:'12/18', card:'검체검사 계약 신고 마감', stage:null, pin:true, title:'씨젠 위·수탁 계약 현황 신고 (심평원)', sub:'MAST를 계속 씨젠에 맡기므로 신고 대상 · 보건의료자원통합신고포털(hurb.or.kr) · 위 체크리스트 참고'},
   {date:'2027-01-01', label:'1/1',   card:'검체검사 개편 시행', stage:null, title:'검체검사 위·수탁 개편 시행', sub:'급여 검사 수가 인하 · 위탁 검사는 의원 몫 25%(조건부 +10%)만 지급 · 새 청구 코드(A·B 짝)'},
-  {date:'2027-01-08', label:'1/8',    card:'輸入確認証 6개월분 가능 여부 확인', stage:null, title:'輸入確認証(薬監証明) 확인', sub:'기존 일본 환자 다음 방문 때 영문 처방서로 신청 시험 · 간토신에쓰 후생국(048-740-0800)에 6개월분·정상아 적용 여부 문의'},
-  {date:'2027-01-15', label:'1/15',   card:'메디컬코리아 2027 사전등록',  stage:null, title:'메디컬코리아 2027 사전등록 확인', sub:'보건산업진흥원 공고 확인 → 일반 참관 사전등록 (3월 코엑스, 휴진일에 방문)'}
+  {date:'2027-03-02', label:'방학 뒤',   card:'輸入確認証 6개월분 가능 여부 확인', stage:null, title:'輸入確認証(薬監証明) 확인', sub:'기존 일본 환자 다음 방문 때 영문 처방서로 신청 시험 · 간토신에쓰 후생국(048-740-0800)에 6개월분·정상아 적용 여부 문의'},
+  {date:'2027-03-02', label:'방학 뒤', card:'메디컬코리아 2027 확인',  stage:null, title:'메디컬코리아 2027 일정 확인', sub:'보건산업진흥원 공고 확인 → 일반 참관 등록 (3월 코엑스, 휴진일에 방문)'}
 ];
 // 매달 10일 '현황판 지난달 숫자 반영'은 자동으로 붙음(다음 2회). 날짜는 'YYYY-MM-DD'.
 var BOARD_DONE='2026-10'; // 현황판에 반영이 끝난 마지막 달 — board.html 갱신할 때 같이 올림
@@ -75,16 +75,6 @@ button.next-h{width:100%;border:0;background:none;color:inherit;font:inherit;pad
 .dday{font-weight:700;font-size:.72rem;background:#f2c46d;color:#2b2414;border-radius:999px;padding:1px 9px;font-variant-numeric:tabular-nums}
 .next-h span{opacity:.85}
 .next-h i{margin-left:auto;font-style:normal;opacity:.7}
-.flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:start}
-.st{display:grid;justify-items:center;gap:6px;text-align:center}
-.st .c{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.55)}
-.st.on .c{background:#f2c46d;border-color:#f2c46d;color:#2b2414}
-.st.done .c{background:rgba(255,255,255,.3);border-color:transparent}
-.st.done b::after{content:" ✓";font-size:.7rem}
-.st svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.st b{font-size:.78rem;font-weight:700;line-height:1.25}
-.st small{font-size:.68rem;opacity:.7;line-height:1.2}
-.ln{width:22px;margin-top:22px;border-top:2px dotted rgba(255,255,255,.6)}
 /* 섹션 */
 main .in{padding-block:6px 40px}
 .sec{background:var(--panel);border:1px solid var(--hair);border-radius:16px;padding:18px 14px 2px;margin-top:14px}
@@ -322,11 +312,16 @@ button.item:active,a.item:active{transform:scale(.98)}
 #v-labcmp .verdict span{font-size:13px;opacity:.92;font-variant-numeric:tabular-nums}
 #v-labcmp .l-tbl td:nth-child(2),#v-labcmp .l-tbl td:nth-child(3){font-weight:600}
 #v-labcmp tr.tot td{font-weight:700;background:var(--s-tot,#F1EEE5)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#v-geo,#v-labcmp){--s-bg:#161b19;--s-ink:#e8e5dd;--s-teal:#8cc2b3;--s-head:#1d3f3a;--s-brick:#e39a88;--s-brick-soft:#3a241f;--s-sage:#86c7a6;--s-sage-soft:#22352c;--s-amber:#e0b060;--s-amber-soft:#33291a;--s-line:#2b3430;--s-paper:#1c2320;--s-mute:#8f978f;--s-barsoft:#3a5a51;--s-track:#2b3430;--s-tot:#232b28;color-scheme:dark}
-:root:not([data-theme="light"]) :is(#v-geo,#v-labcmp) .hero2{background:var(--s-head);color:#f2efe6}
-:root:not([data-theme="light"]) :is(#v-geo,#v-labcmp) .refresh-btn{color:#f2efe6}
-:root:not([data-theme="light"]) :is(#v-geo,#v-labcmp) .s-tab.active{background:#f2efe6;color:#1d3f3a;border-color:#f2efe6}
-:root:not([data-theme="light"]) :is(#v-geo,#v-labcmp) :is(.exp-badge.normal,.badge.none){background:#2b3430}}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#v-stock,#v-money,#v-geo,#v-labcmp){--s-bg:#161b19;--s-ink:#e8e5dd;--s-teal:#8cc2b3;--s-head:#1d3f3a;--s-brick:#e39a88;--s-brick-soft:#3a241f;--s-sage:#86c7a6;--s-sage-soft:#22352c;--s-amber:#e0b060;--s-amber-soft:#33291a;--s-line:#2b3430;--s-paper:#1c2320;--s-mute:#8f978f;--s-barsoft:#3a5a51;--s-track:#2b3430;--s-tot:#232b28;color-scheme:dark}
+:root:not([data-theme="light"]) :is(#v-stock,#v-money,#v-geo,#v-labcmp) .hero2{background:var(--s-head);color:#f2efe6}
+:root:not([data-theme="light"]) :is(#v-stock,#v-money,#v-geo,#v-labcmp) .refresh-btn{color:#f2efe6}
+:root:not([data-theme="light"]) :is(#v-stock,#v-money,#v-geo,#v-labcmp) .s-tab.active{background:#f2efe6;color:#1d3f3a;border-color:#f2efe6}
+:root:not([data-theme="light"]) :is(#v-stock,#v-money,#v-geo,#v-labcmp) :is(.exp-badge.normal,.badge.none){background:#2b3430}
+:root:not([data-theme="light"]) :is(#v-stock,#v-money,#v-geo,#v-labcmp) .skel{background:linear-gradient(90deg,transparent,#2b3430,transparent);background-size:200% 100%}
+:root:not([data-theme="light"]) :is(#v-stock,#v-money,#v-geo,#v-labcmp) .price-group-label{background:#161b19}
+:root:not([data-theme="light"]) :is(#v-stock,#v-money,#v-geo,#v-labcmp) .empty-state{border-color:#2f4a3e}
+:root:not([data-theme="light"]) :is(#v-stock,#v-money,#v-geo,#v-labcmp) .empty-state .small{color:#9fbfae}
+:root:not([data-theme="light"]) :is(#v-stock,#v-money,#v-geo,#v-labcmp) .err-state{border-color:#4a3c22}}
 #v-labcmp tbody tr{cursor:default}
 #v-labcmp .l-reset{min-height:40px;padding:0 14px;border:1px solid var(--s-line);background:transparent;border-radius:10px;font:600 13px inherit;color:inherit;margin:4px 16px 14px}
 </style>
@@ -337,13 +332,6 @@ button.item:active,a.item:active{transform:scale(.98)}
     <div class="brand"><img src="data:image/png;base64,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" alt="키오름"><div><b>키오름성장의원</b><span>업무 자동화</span></div><span class="date" id="today"></span></div>
     <button class="next" data-view="schedule">
       <span class="next-h"><span class="dday" id="dday"></span><span id="nxt"></span><i>›</i></span>
-      <span class="flow">
-        <span class="st on"><span class="c"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span><b>장비 설치</b><small>10/28</small></span>
-        <span class="ln"></span>
-        <span class="st"><span class="c"><svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></span><b>데이터 연동</b><small>설치 직후</small></span>
-        <span class="ln"></span>
-        <span class="st"><span class="c"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="m9 12 2 2 4-4"/></svg></span><b>원내 검사</b><small>11월</small></span>
-      </span>
     </button>
   </div></section>
 
@@ -375,7 +363,7 @@ button.item:active,a.item:active{transform:scale(.98)}
         <button class="app misc" data-view="geo"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg></span><span class="lbl">동네 지표</span></button>
       </div>
     </section>
-    <p class="foot">마지막 수정 2026.11.27 · v52</p>
+    <p class="foot">마지막 수정 2026.11.27 · v53</p>
   </div></main>
 </div>
 
@@ -528,9 +516,9 @@ peak LH 9.95 (45분)
   <div class="bar"><button class="back">‹ 그 외</button><h2>공유폴더 권한</h2></div>
   <div class="intro"><span class="pills"><span class="pill wait">준비</span><span class="when">다음 주 완료 예정</span></span><p>계정 3개 생성. 간호사 연결 완료, PA·임상병리 PC 남음.</p></div>
   <div class="group">
-    <div class="item split"><span>간호사 · keyoreum_nurse</span><span class="v">검사결과 PDF만</span></div>
-    <div class="item split"><span>PA · keyoreum_pa</span><span class="v">엑셀만</span></div>
-    <div class="item split"><span>임상병리사 · keyoreum_lab</span><span class="v">전체</span></div>
+    <div class="item split"><span>간호사용 계정</span><span class="v">검사결과 PDF만</span></div>
+    <div class="item split"><span>PA용 계정</span><span class="v">엑셀만</span></div>
+    <div class="item split"><span>임상병리사용 계정</span><span class="v">전체</span></div>
   </div>
 </div></div>
 
@@ -674,7 +662,7 @@ peak LH 9.95 (45분)
     var ev=ALL.find(function(e){return e.pin&&e.date>=today})||ALL.find(function(e){return e.date>=today}); // pin = 마감이 있는 일은 더 가까운 일정이 있어도 홈 카드에 먼저
     if(!ev){document.getElementById('dday').textContent='일정';document.getElementById('nxt').textContent='다음 일정을 추가하세요';throw 0}
     var d=Math.ceil((ev.date-today)/864e5);document.getElementById('dday').textContent=d>0?'D-'+d:(d===0?'D-DAY':'지남');
-    document.getElementById('nxt').textContent=ev.card;var fl=document.querySelector('.flow');fl.hidden=(ev.stage==null);var sts=document.querySelectorAll('.flow .st');sts.forEach(function(s,i){s.classList.toggle('on',i===ev.stage);s.classList.toggle('done',ev.stage!=null&&i<ev.stage)})}catch(err){}
+    document.getElementById('nxt').textContent=ev.card;}catch(err){}
 })();
 </script>
 
